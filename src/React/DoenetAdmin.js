@@ -217,13 +217,18 @@ class DoenetAdmin extends Component {
           //   assignment:!!+payLoad.assignment,
           // }
 
-          this.state.overview=+(resp.data["overview"])
-          this.state.grade=+(resp.data["grade"])
-          this.state.syllabus=+(resp.data["syllabus"])
-          this.state.assignment=+(resp.data["assignment"])
-          if (!this.assignment_state_1){
-            this.state.assignment=false;
-          }
+          this.setState({overview:+(resp.data["overview"])})
+          this.setState({syllabus:+(resp.data["syllabus"])})
+          this.setState({grade:+(resp.data["grade"])})
+          this.setState({assignment:+(resp.data["assignment"])})
+
+          // this.state.grade=+(resp.data["grade"])
+          // this.state.syllabus=+(resp.data["syllabus"])
+          // this.state.assignment=+(resp.data["assignment"])
+          
+          // if (!this.assignment_state_1){
+          //   this.state.assignment=false;
+          // }
           // let foundit=false
           Object.keys(this.payLoad).map((e)=>{
                 console.log("looping payload here")
@@ -2017,10 +2022,15 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
 
   render() {
-    console.log("====RENDER====");
+    console.log("====MAINRENDER====");
     if (this.state.newChange===true){
     this.ToggleList();
     }
+    console.log(this.state.overview)
+    console.log(this.state.syllabus)
+    console.log(this.state.grade)
+    console.log(this.state.assignment)
+
     this.enableThese=[]
     this.enabledDisabledArray = {
       "overview":!!+this.state.overview,
