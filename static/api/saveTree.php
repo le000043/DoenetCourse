@@ -73,7 +73,7 @@ while ($iterator < $HeadingSize) {
   if ($headerID_childrenId_array_to_payload[$iterator]=="NULL"){
     $headerID_childrenId_array_to_payload[$iterator] = NULL;
   }
-  $string = $string."(\"".$headerID_array_to_payload[$iterator]."\",\"".$headerID_name[$iterator]."\",\"".$headerID_parentId_array_to_payload[$iterator]."\",\"".$headerID_childrenId_array_to_payload[$iterator]."\")";
+  $string = $string."(\"".$headerID_array_to_payload[$iterator]."\",\"".$headerID_name[$iterator]."\",\"".$headerID_parentId_array_to_payload[$iterator]."\",\"".$headerID_childrenId_array_to_payload[$iterator]."\",\"".'aI8sK4vmEhC5sdeSP3vNW'."\")";
   if ($iterator<$HeadingSize-1){
     $string = $string.",";
   }
@@ -81,7 +81,7 @@ while ($iterator < $HeadingSize) {
 }
 $sql = "DELETE FROM course_heading WHERE courseid='aI8sK4vmEhC5sdeSP3vNW'"; // these have to be 2 separate sql run otherwise nothing will ever change !
 $result = $conn->query($sql);
-$sql = "INSERT INTO course_heading (courseHeadingId,headingText,parentId,childrenId) VALUES ".$string;
+$sql = "INSERT INTO course_heading (courseHeadingId,headingText,parentId,childrenId,courseId) VALUES ".$string;
 echo $sql;
 // TODO: bug, cannot save tree when adding new header under Ultimate Header
 // save automatically whenever u modify tree, no more Save tree button
