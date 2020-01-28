@@ -3,8 +3,12 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Hint extends BlockComponent {
   static componentType = "hint";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let atLeastZeroInline = childLogic.newLeaf({
       name: "atLeastZeroInline",

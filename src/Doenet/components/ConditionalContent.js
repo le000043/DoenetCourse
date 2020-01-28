@@ -3,103 +3,87 @@ import BlockComponent from './abstract/BlockComponent';
 export default class ConditionalContent extends BlockComponent {
   static componentType = "conditionalcontent";
 
-  static createPropertiesObject() {
-    let properties = super.createPropertiesObject();
-    delete properties.hide;
-    return properties;
-  }
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let atMostOneIf = childLogic.newLeaf({
-      name: "atMostOneIf",
+    let AtMostOneIf = childLogic.newLeaf({
+      name: "AtMostOneIf",
       componentType: 'if',
       comparison: 'atMost',
       number: 1,
       allowSpillover: false,
     });
 
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
+    let AtLeastZeroInline = childLogic.newLeaf({
+      name: "AtLeastZeroInline",
       componentType: '_inline',
       comparison: 'atLeast',
       number: 0,
     });
 
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
+    let AtLeastZeroBlock = childLogic.newLeaf({
+      name: "AtLeastZeroBlock",
       componentType: '_block',
       comparison: 'atLeast',
       number: 0,
     });
 
-    let inlineAndBlock = childLogic.newOperator({
-      name: "inlineAndBlock",
-      operator: "and",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
-    })
-
     childLogic.newOperator({
-      name: "ifAndRest",
+      name: "IfAndRest",
       operator: "and",
-      propositions: [atMostOneIf, inlineAndBlock],
+      propositions: [AtMostOneIf, AtLeastZeroInline, AtLeastZeroBlock],
       setAsBase: true,
     })
-
+    
     return childLogic;
   }
 
+  updateState(args={}) {
+    super.updateState(args);
 
-  static returnStateVariableDefinitions() {
+    if(!this.childLogicSatisfied) {
+      this.unresolvedState.hide = true;
+      return;
+    }
+    delete this.unresolvedState.hide;
 
-    let stateVariableDefinitions = {};
+    let trackChanges = this.currentTracker.trackChanges;
+    let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    stateVariableDefinitions.hide = {
-      returnDependencies: () => ({
-        ifChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneIf",
-          variableNames: ["conditionSatisfied"],
-        },
-      }),
-      definition: function ({ dependencyValues }) {
+    if(childrenChanged) {
 
-        let hide;
-        if (dependencyValues.ifChild.length === 0) {
-          hide = true;
-        } else {
-          hide = !dependencyValues.ifChild[0].stateValues.conditionSatisfied;
-        }
-
-        return { newValues: { hide } }
-      }
-    };
-
-    stateVariableDefinitions.childrenWhoRender = {
-      returnDependencies: () => ({
-        inlineBlockChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "inlineAndBlock",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenWhoRender: dependencyValues.inlineBlockChildren.map(x => x.componentName)
-          }
-        }
+      let ifInd = this.childLogic.returnMatches("AtMostOneIf")
+      if(ifInd.length === 1) {
+        this.state.ifChild = this.activeChildren[ifInd[0]];
+      }else {
+        delete this.state.ifChild;
       }
     }
 
-    return stateVariableDefinitions;
+    if(this.state.ifChild) {
+      this.state.hide = this.state.ifChild.evaluateLogic() === 0;
+    }
+
   }
-
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
+  
+  initializeRenderer(){
+    if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.container({ key: this.componentName });
     }
   }
+
+  updateChildrenWhoRender(){
+
+    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
+
+    if(this.state.ifChild !== undefined) {
+      this.childrenWhoRender = this.childrenWhoRender.filter(x => x !== this.state.ifChild.componentName);
+    }
+  }
+
 
 }

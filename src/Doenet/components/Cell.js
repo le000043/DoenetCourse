@@ -4,8 +4,10 @@ import me from 'math-expressions';
 export default class Cell extends BaseComponent {
   static componentType = "cell";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
 
     properties.rownum = {default: undefined};
     properties.colnum = {default: undefined};
@@ -13,8 +15,12 @@ export default class Cell extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: 'anything',
@@ -228,7 +234,7 @@ export default class Cell extends BaseComponent {
   adapters = ["text", "math", "number"];
 
   allowDownstreamUpdates(status) {
-    return(status.initialChange === true || this.state.modifyIndirectly === true);
+    return(status.initialChange === true || this.state.modifybyreference === true);
   }
 
   get variablesUpdatableDownstream() {

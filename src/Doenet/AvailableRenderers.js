@@ -26,7 +26,6 @@ import SolutionRenderer from './renderers/SolutionRenderer';
 import ListRenderer from './renderers/ListRenderer';
 import LinkRenderer from './renderers/LinkRenderer';
 import FeedbackRenderer from './renderers/FeedbackRenderer';
-import DivRenderer from './renderers/DivRenderer';
 
 
 let availableRenderers = Object.assign({},
@@ -57,7 +56,6 @@ let availableRenderers = Object.assign({},
   ListRenderer,
   LinkRenderer,
   FeedbackRenderer,
-  DivRenderer
 );
 
 export default availableRenderers;

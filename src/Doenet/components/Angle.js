@@ -4,16 +4,22 @@ import me from 'math-expressions';
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.draggable = {default: true};
     properties.radius = {default: me.fromAst(1)};
     properties.renderAsAcuteAngle = {default: false};
     return properties;
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let addThrough = function({activeChildrenMatched}) {
       // add <through> around points

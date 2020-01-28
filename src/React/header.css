@@ -1,13 +1,13 @@
 .headingContainerWrapper {
-  height: 100%;
-  margin-bottom: 100px;
+  height: 90%;
+  margin-bottom: 90px;
 }
 
 .headingContainer{
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
-  background-color: #6de5ff;
+  background-color: #00a385e8;
   justify-content: space-between;
   padding: 6px;
   width: 100%;
@@ -31,8 +31,7 @@
 
 .toolTitle span {
   font-size: 20px;
-  color: #333333;
-  /* color: #fff; */
+  color: #fff;
   font-weight: 700;
   margin-left: 10px;
 }
@@ -52,8 +51,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* color: #6d4445; */
-  color: #333333;
+  color: #fff;
 }
 
 .headingToolbar {
@@ -76,20 +74,18 @@
   background-color: none;
   padding: 7px 3px;
   font-size: 13px;
-  color: #333333;
+  color: #fff;
   text-transform: none;
   font-weight: 700;
   border: 0.5px solid;
-  border-color: #333333;
+  border-color: #fff;
   transition: 300ms;
   margin: 0px 10px;
 }
 
 #previousPageButton:hover, #previousPageButton:hover #previousPageButtonIcon {
   background-color: #fff;
-  border-color: #fff;
-
-  color: #6d4445;
+  color: #00725de8;
 }
 
 #previousPageButtonIcon {
@@ -97,7 +93,7 @@
   margin: 1px auto;
   display: inline;
   background: none;
-  color: #333333;
+  color: #fff;
   transition: 300ms;
 }
 
@@ -111,19 +107,18 @@
     cursor: pointer;
     background-color: none;
     padding: 7px 5px;
-    color:#333333;
+    color:#fff;
     text-transform: none;
     font-weight: 700;
     border: 0.5px solid;
-    border-color: #333333;
+    border-color: #fff;
     transition: 300ms;
     margin: 0px 10px;
 }
 
 #userButton:hover, #userButton:hover #userButtonIcon {
   background-color: #fff;
-  border-color: #fff;
-  color: #6d4445;
+  color: #00725de8;
 }
 
 #userButtonIcon {
@@ -131,7 +126,7 @@
   margin: 1px auto;
   display: inline;
   background: none;
-  color: #333333;
+  color: #fff;
   transition: 300ms;
 }
 
@@ -143,13 +138,13 @@
 
 #toolboxButton {
   font-size: 20px;
-  color: #333333;
+  color: #fff;
   transition: all 0.5s ease-in-out 0s;
   cursor: pointer;
 }
 
 .toolboxContainer:hover #toolboxButton{
-  color: #fff;
+  color: #00ffd0;
 }
 
 .toolbox {
@@ -235,7 +230,7 @@
   }
 
   #doenetLogo {
-    height: 30px;
+    height: 20px;
   }
 
   #toolboxButton {

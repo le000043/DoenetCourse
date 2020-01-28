@@ -4,23 +4,30 @@ import me from 'math-expressions';
 export default class NumberBaseOperatorOrNumber extends NumberComponent {
   static componentType = "_numberbaseoperatorornumber";
 
-  static modifySharedParameters({ sharedParameters, serializedComponent }) {
+  static previewSerializedComponent({sharedParameters, serializedComponent}) {
 
     // if serializedComponent has a defaultToPrescribedParameters
     // essential state variable set, it overrides the value from shared parameters
 
-    if (serializedComponent.state !== undefined &&
-      serializedComponent.state.defaultToPrescribedParameters !== undefined) {
+    if(serializedComponent.state !== undefined &&
+        serializedComponent.state.defaultToPrescribedParameters !== undefined) {
       sharedParameters.defaultToPrescribedParameters =
         serializedComponent.state.defaultToPrescribedParameters;
     }
+    
+    return;
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components,
+      sharedParameters }) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
-    if (args.sharedParameters.defaultToPrescribedParameters) {
+    if(sharedParameters.defaultToPrescribedParameters) {
       // if prescribed parameter, behaves just as a number component
       return childLogic;
 
@@ -28,13 +35,11 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
 
     childLogic.deleteAllLogic();
 
-    let breakStringIntoNumbersByCommas = function ({ activeChildrenMatched }) {
-      console.log("activeChildrenMatched")
-      console.log(activeChildrenMatched)
+    let breakStringIntoNumbersByCommas = function({activeChildrenMatched}) {
       let stringChild = activeChildrenMatched[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
+      let newChildren = stringChild.state.value.split(",").map(x=> ({
         componentType: "number",
-        state: { value: Number(x) }
+        state: {value: Number(x)}
       }));
       return {
         success: true,
@@ -48,81 +53,91 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastZeroNumbers"],
       replacementFunction: breakStringIntoNumbersByCommas,
     });
 
-    let atLeastZeroNumbers = childLogic.newLeaf({
-      name: "atLeastZeroNumbers",
-      componentType: 'number',
+    let atLeastZeroMaths = childLogic.newLeaf({
+      name: "atLeastZeroMaths",
+      componentType: 'math',
       comparison: "atLeast",
       number: 0,
     });
 
     childLogic.newOperator({
-      name: "SugarXorNumbers",
+      name: "SugarXorMaths",
       operator: "xor",
-      propositions: [exactlyOneString, atLeastZeroNumbers],
+      propositions: [exactlyOneString, atLeastZeroMaths],
       setAsBase: true,
     })
     return childLogic;
   }
 
+  updateState(args={}) {
 
+    super.updateState(args);
 
-  static returnStateVariableDefinitions() {
+    if(!this.childLogicSatisfied) {
+      return;
+    }
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-    let componentClass = this;
+    if(this.sharedParameters.defaultToPrescribedParameters) {
+      // if prescribed parameter, behaves just as a number component
+      return;
+    }
 
-    let originalReturnDependencies = stateVariableDefinitions.value.returnDependencies;
+    let trackChanges = this.currentTracker.trackChanges;
+    let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    stateVariableDefinitions.value.returnDependencies = function ({ sharedParameters }) {
-      if (sharedParameters.defaultToPrescribedParameters) {
-        return originalReturnDependencies({ sharedParameters });
-      } else {
-        return {
-          atLeastZeroNumbers: {
-            dependencyType: "childStateVariables",
-            childLogicName: "atLeastZeroNumbers",
-            variableNames: ["value"],
-          },
+    if(childrenChanged) {
+      let mathInds = this.childLogic.returnMatches("atLeastZeroMaths");
+      this.state.mathChildren = mathInds.map(x=>this.activeChildren[x]);
+      this.state.nMaths = mathInds.length;
+    }
+
+    if(this.state.nMaths > 0) {
+      if(this.state.mathChildren.some(x => x.unresolvedState.value)) {
+        this.unresolvedState.value = true;
+        this.unresolvedState.latex = true;
+        return;
+      } else if(childrenChanged || this.state.mathChildren.some(x =>
+        trackChanges.getVariableChanges({
+          component: x, variable: "value"})
+      )) {
+        // recalculate value
+        this.state.number = this.applyNumberOperator();
+        delete this.unresolvedState.number;
+      }
+    }else {
+      delete this.unresolvedState.number;
+      if(!this._state.number.essential) {
+        if(this._state.value.essential) {
+          this.state.number = this.state.value.evaluate_to_constant();
+        }else {
+          this.state.number = this.applyNumberOperator();
         }
       }
     }
 
-    let originalDefinition = stateVariableDefinitions.value.definition;
-    stateVariableDefinitions.value.definition = function ({ dependencyValues }) {
-      if ("numberChild" in dependencyValues) {
-        return originalDefinition({ dependencyValues });
-      } else {
-        if (dependencyValues.atLeastZeroNumbers.length === 0) {
-          return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
-        }
-        let numbers = dependencyValues.atLeastZeroNumbers.map(x => x.stateValues.value);
-        return { newValues: { value: componentClass.applyNumberOperator(numbers, dependencyValues) } };
-      }
+    delete this.unresolvedState.value;
+    if(Number.isFinite(this.state.number)) {
+      this.state.value = me.fromAst(this.state.number);
+    }else {
+      this.state.value = me.fromAst('\uFF3F'); // long underscore
     }
 
-    let originalInverseDefinition = stateVariableDefinitions.value.inverseDefinition;
-    stateVariableDefinitions.value.inverseDefinition = function (args) {
-      if("numberChild" in args.dependencyValues) {
-        return originalInverseDefinition(args);
-      } else {
-        return { success: false };
-      }
+    if(trackChanges.getVariableChanges({
+      component: this, variable: "value"
+    }) ||
+    trackChanges.getVariableChanges({
+      component: this, variable: "displaydigits"
+    })) {
+      let rounded = this.state.value
+        .round_numbers_to_precision(this.state.displaydigits);
+      this.state.latex = rounded.toLatex();
+      this.state.text = rounded.toString();
+      delete this.unresolvedState.latex;
+      delete this.unresolvedState.text;
     }
-
-
-    stateVariableDefinitions.canBeModified = {
-      returnDependencies: () => ({}),
-      definition: function () {
-        return { newValues: { canBeModified: false } };
-      },
-    }
-
-    return stateVariableDefinitions;
-
   }
-
+  
 }

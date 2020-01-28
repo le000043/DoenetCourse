@@ -19,8 +19,10 @@ export default class RandomNumber extends NumberComponent {
     return;
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     // possible types
     // discrete: determined by from, to, and step
     // uniform: between from and to (step ignored)
@@ -34,8 +36,12 @@ export default class RandomNumber extends NumberComponent {
   }
 
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.deleteAllLogic();
 

@@ -4,8 +4,10 @@ import me from 'math-expressions';
 export default class Table extends BaseComponent {
   static componentType = "table";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.width = {default: '400px'};
     properties.height = {default: undefined};
     properties.numrows = {default: 4};
@@ -14,9 +16,13 @@ export default class Table extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
-  
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
+    
     let zeroOrMoreCells = childLogic.newLeaf({
       name: "zeroOrMoreCells",
       componentType: 'cell',
@@ -171,7 +177,7 @@ export default class Table extends BaseComponent {
     }
 
     if(childrenChanged || changeUnresolveResult.possibleCellIdentityChange) {
-      // if identities of any cell descendant may have changed,
+      // if identities of any cell descendent may have changed,
       // then rebuild cell structures from children
 
       // array of cell components (children) by row and column
@@ -237,13 +243,12 @@ export default class Table extends BaseComponent {
       // (don't check if unresolved, since care most about efficiency for
       // case where there are no unresolved cells)
       for(let cellName in this.state.cellNameToRowCol) {
-        let rowcol = this.state.cellNameToRowCol[cellName];
-        let child = this.state.cellComponents[rowcol.row][rowcol.col];
-
+        let child = this.components[cellName];
         if(trackChanges.getVariableChanges({
           component: child, variable: "text"
         })){
 
+          let rowcol = this.state.cellNameToRowCol[cellName];
           this.state.cells[rowcol.row][rowcol.col] = child.state.text;
 
           // for now, just recreate all points found in cells
@@ -337,6 +342,10 @@ export default class Table extends BaseComponent {
         }
       }
     }
+
+    // round in case weren't integers
+    numrows = Math.round(numrows);
+    numcolumns = Math.round(numcolumns);
 
     // set state variables to new size
     this.state.numrows = numrows;
@@ -700,7 +709,7 @@ export default class Table extends BaseComponent {
   allowDownstreamUpdates(status) {
     // since can't change via parents, 
     // only non-initial change can be due to reference
-    return(status.initialChange === true || this.state.modifyIndirectly === true);
+    return(status.initialChange === true || this.state.modifybyreference === true);
   }
 
   get variablesUpdatableDownstream() {
@@ -1034,7 +1043,7 @@ function returnTableSerializedComponents({
 
     // second shallow copy for downDep.downstreamVariables deep copy
     serializedComponent.downstreamDependencies = {
-      [componentName]:  [Object.assign({}, downDep)],
+      [componentName]:  Object.assign({}, downDep),
     }
     return serializedComponent;
   }

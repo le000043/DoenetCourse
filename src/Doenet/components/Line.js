@@ -4,14 +4,20 @@ import me from 'math-expressions';
 export default class Line extends GraphicalComponent {
   static componentType = "line";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({ standardComponentTypes }) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.draggable = { default: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let exactlyOneEquation = childLogic.newLeaf({
       name: "exactlyOneEquation",
@@ -948,7 +954,7 @@ export default class Line extends GraphicalComponent {
 
   allowDownstreamUpdates(status) {
     return ((status.initialChange === true && this.state.draggable === true) ||
-      (status.initialChange !== true && this.state.modifyIndirectly === true));
+      (status.initialChange !== true && this.state.modifybyreference === true));
   }
 
   get variablesUpdatableDownstream() {

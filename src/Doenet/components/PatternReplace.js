@@ -5,8 +5,12 @@ export class Pattern extends BaseComponent {
 
   static alwaysContinueUpstreamUpdates = true;
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: "exactlyOneChild",
@@ -26,8 +30,12 @@ export class Replace extends BaseComponent {
 
   static alwaysContinueUpstreamUpdates = true;
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let breakStringIntoTwoStringsByCommas = function({activeChildrenMatched}) {
       let stringChild = activeChildrenMatched[0];

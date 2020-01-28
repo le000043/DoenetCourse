@@ -4,8 +4,10 @@ import me from 'math-expressions';
 export default class AnimateFromSequence extends Sequence {
   static componentType = "animatefromsequence";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.animationOn = {default: false};
     properties.animationMode = {default: "increase"};
     properties.animationInterval = {default: 1000};
@@ -76,7 +78,7 @@ export default class AnimateFromSequence extends Sequence {
     if(this.state.selectedIndex === undefined) {
       this.state.selectedIndex = Math.min(
         this.state.numberValues-1,
-        Math.max(0, this.state.initialselectedindex)
+        Math.max(0, Math.round(this.state.initialselectedindex))
       );
       this._state.selectedIndex.essential = true;
     }else {
@@ -200,32 +202,32 @@ export default class AnimateFromSequence extends Sequence {
     }
   }
 
-  static createSerializedReplacements(component) {
+  createSerializedReplacements() {
 
     let replacements = [];
 
-    if(component.state.value !== undefined) {
+    if(this.state.value !== undefined) {
       replacements.push({
-        componentType: component.state.type,
-        state: {value: component.state.value, hide: component.state.hide}
+        componentType: this.state.type,
+        state: {value: this.state.value, hide: this.state.hide}
       });
     }
 
     return replacements;
   }
 
-  static calculateReplacementChanges({component}) {
+  calculateReplacementChanges() {
 
     let replacementChanges = [];
 
-    if(component.state.value === undefined) {
-      if(component.replacements[0] !== undefined){
+    if(this.state.value === undefined) {
+      if(this.replacements[0] !== undefined){
         // delete all replacements
         let replacementInstruction = {
           changeType: "delete",
           changeTopLevelReplacements: true,
           firstReplacementInd: 0,
-          numberReplacementsToDelete: component.replacements.length,
+          numberReplacementsToDelete: this.replacements.length,
         }
 
         replacementChanges.push(replacementInstruction);
@@ -233,15 +235,15 @@ export default class AnimateFromSequence extends Sequence {
       return replacementChanges;
     }
 
-    if(component.replacements[0] === undefined ||
-      component.state.type !== component.replacements[0].componentType) {
+    if(this.replacements[0] === undefined ||
+      this.state.type !== this.replacements[0].componentType) {
       // recreate replacements
       let replacementInstruction = {
         changeType: "add",
         changeTopLevelReplacements: true,
         firstReplacementInd: 0,
-        numberReplacementsToReplace: component.replacements.length,
-        serializedReplacements: component.constructor.createSerializedReplacements(component),
+        numberReplacementsToReplace: this.replacements.length,
+        serializedReplacements: this.createSerializedReplacements(),
       };
       replacementChanges.push(replacementInstruction);
       return replacementChanges;
@@ -249,8 +251,8 @@ export default class AnimateFromSequence extends Sequence {
 
     let replacementInstruction = {
       changeType: "updateStateVariables",
-      component: component.replacements[0],
-      stateChanges: {value: component.state.value}
+      component: this.replacements[0],
+      stateChanges: {value: this.state.value}
     }
     replacementChanges.push(replacementInstruction);
 
@@ -260,7 +262,7 @@ export default class AnimateFromSequence extends Sequence {
 
 
   allowDownstreamUpdates(status) {
-    return status.initialChange || this.state.modifyIndirectly;
+    return status.initialChange || this.state.modifybyreference;
   }
 
   get variablesUpdatableDownstream() {

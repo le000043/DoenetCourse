@@ -3,8 +3,12 @@ import BaseComponent from './BaseComponent';
 export default class ComponentWithAnyChildren extends BaseComponent {
   static componentType = "_componentwithanychildren";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: 'anything',

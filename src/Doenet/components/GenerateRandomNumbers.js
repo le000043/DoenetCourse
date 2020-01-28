@@ -3,14 +3,21 @@ import RandomNumber from './RandomNumber';
 import SelectFromSequence from './SelectFromSequence';
 
 export default class GenerateRandomNumbers extends CompositeComponent {
+  constructor(args){
+    super(args);
+
+    this.serializedReplacements = this.createSerializedReplacements();
+  }
   static componentType = "generaterandomnumbers";
 
-  static assignNamesToReplacements = true;
+  static childrenToAssignNames = [];
 
   static previewSerializedComponent = RandomNumber.previewSerializedComponent;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = RandomNumber.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
 
     properties.numberOfSamples = {default: 1};
     properties.withreplacement = {default: false};  //used only for discrete
@@ -45,12 +52,11 @@ export default class GenerateRandomNumbers extends CompositeComponent {
       if(this._state.exclude === undefined) {
         this._state.exclude = {trackChanges: true, value: []};
       }
-      this.replacementsToWithhold = 0;
     }
-
     super.updateState(args);
 
     if(!this.childLogicSatisfied) {
+      this.serializedReplacements = [];
       this.state.randomResults = [];
       return;
     }
@@ -58,6 +64,7 @@ export default class GenerateRandomNumbers extends CompositeComponent {
     RandomNumber.getRandomNumberParametersFromChildren(this);
 
     if(Object.keys(this.unresolvedState).length > 0) {
+      this.serializedReplacements = [];
       this.state.randomResults = [];
       return;
     }
@@ -161,7 +168,7 @@ export default class GenerateRandomNumbers extends CompositeComponent {
 
     //TODO: NAMESPACES SHOULD BE IN CORE 
     // determine the namespace of the randomNumber
-    let randomNumberAlias = this.doenetAttributes.componentName;
+    let randomNumberAlias = this.doenetAttributes.componentAlias;
     if(randomNumberAlias !== undefined) {
       if(this.doenetAttributes.newNamespace === true) {
         this.state.randomNumberNamespace = randomNumberAlias + "/";
@@ -174,61 +181,63 @@ export default class GenerateRandomNumbers extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({component}) {
+  createSerializedReplacements() {
 
     let serializedReplacements = [];
 
-    let assignNames = component.doenetAttributes.assignNames;
+    this.replacementsToWithhold = 0;
 
-    for(let [ind, num] of component.state.randomResults.entries()) {
+    let assignNames = this.doenetAttributes.assignNames;
+
+    for(let [ind, num] of this.state.randomResults.entries()) {
 
       let name;
       if(assignNames !== undefined && ind < assignNames.length) {
         name = assignNames[ind];
       }else {
         // if nothing specified, create an obscure name
-        name = "_" + component.componentName + "_" + ind;
+        name = "_" + this.componentName + "_" + ind;
       }
       // prepend randomNumber's namespace
-      if(component.state.randomNumberNamespace !== undefined) {
-        name = component.state.randomNumberNamespace + name;
+      if(this.state.randomNumberNamespace !== undefined) {
+        name = this.state.randomNumberNamespace + name;
       }
 
       serializedReplacements.push({
         componentType: "number",
-        doenetAttributes: {componentName: name},
+        doenetAttributes: {componentAlias: name},
         state: {value: num},
       })
     }
 
-    return {replacements: serializedReplacements };
+    return serializedReplacements;
   }
 
 
 
-  static calculateReplacementChanges({component}) {
+  calculateReplacementChanges(componentChanges) {
 
     let replacementChanges = [];
 
     let numAssignNames = 0;
-    if(component.doenetAttributes.assignNames!== undefined) {
-      numAssignNames = component.doenetAttributes.assignNames.length;
+    if(this.doenetAttributes.assignNames!== undefined) {
+      numAssignNames = this.doenetAttributes.assignNames.length;
     };
 
-    let effectiveNumberOfReplacements = component.replacements.length - component.replacementsToWithhold;
+    let effectiveNumberOfReplacements = this.replacements.length - this.replacementsToWithhold;
 
-    if(effectiveNumberOfReplacements > component.state.randomResults.length) {
+    if(effectiveNumberOfReplacements > this.state.randomResults.length) {
       // have fewer results now, so delete or withhold some replacements
 
-      let numberToWithhold = component.replacementsToWithhold;
+      let numberToWithhold = this.replacementsToWithhold;
 
       // don't delete any unless aren't withhoold any
-      if(component.replacementsToWithhold === 0) {
+      if(this.replacementsToWithhold === 0) {
 
         // will only delete those without names assigned
-        let firstIndToDelete = Math.max(component.state.randomResults.length, numAssignNames);
-        let numberToDelete = Math.max(0, component.replacements.length - firstIndToDelete);
-        numberToWithhold = Math.max(0, numAssignNames - component.state.randomResults.length);
+        let firstIndToDelete = Math.max(this.state.randomResults.length, numAssignNames);
+        let numberToDelete = Math.max(0, this.replacements.length - firstIndToDelete);
+        numberToWithhold = Math.max(0, numAssignNames - this.state.randomResults.length);
 
         if(numberToDelete > 0) {
           let replacementInstruction = {
@@ -241,10 +250,10 @@ export default class GenerateRandomNumbers extends CompositeComponent {
         }
       }else {
         // already withholding replacements, so just withhold more
-        numberToWithhold = component.replacements.length - component.state.randomResults.length;
+        numberToWithhold = this.replacements.length - this.state.randomResults.length;
       }
 
-      if(numberToWithhold !== component.replacementsToWithhold)  {
+      if(numberToWithhold !== this.replacementsToWithhold)  {
         let replacementInstruction = {
           changeType: "changedReplacementsToWithhold",
           replacementsToWithhold: numberToWithhold,
@@ -252,16 +261,16 @@ export default class GenerateRandomNumbers extends CompositeComponent {
         replacementChanges.push(replacementInstruction);   
       }
       
-    }else if(effectiveNumberOfReplacements < component.state.randomResults.length) {
+    }else if(effectiveNumberOfReplacements < this.state.randomResults.length) {
       // have more results now, so add additional replacements
       // or stop withholding them
       let newReplacements = [];
-      let assignNames = component.doenetAttributes.assignNames;
+      let assignNames = this.doenetAttributes.assignNames;
 
 
-      let numberToWithhold = Math.max(0,component.replacements.length - component.state.randomResults.length);
+      let numberToWithhold = Math.max(0,this.replacements.length - this.state.randomResults.length);
 
-      if(numberToWithhold !== component.replacementsToWithhold) {
+      if(numberToWithhold !== this.replacementsToWithhold) {
         let replacementInstruction = {
           changeType: "changedReplacementsToWithhold",
           replacementsToWithhold: numberToWithhold,
@@ -271,31 +280,31 @@ export default class GenerateRandomNumbers extends CompositeComponent {
       }
 
       // add any extras, if needed
-      for(let ind=component.replacements.length; ind < component.state.randomResults.length; ind++) {
+      for(let ind=this.replacements.length; ind < this.state.randomResults.length; ind++) {
 
         let name;
         if(assignNames !== undefined && ind < assignNames.length) {
           name = assignNames[ind];
         }else {
           // if nothing specified, create an obscure name
-          name = "_" + component.componentName + "_" + ind;
+          name = "_" + this.componentName + "_" + ind;
         }
         // prepend randomNumber's namespace
-        if(component.state.randomNumberNamespace !== undefined) {
-          name = component.state.randomNumberNamespace + name;
+        if(this.state.randomNumberNamespace !== undefined) {
+          name = this.state.randomNumberNamespace + name;
         }
 
         newReplacements.push({
           componentType: "number",
-          doenetAttributes: {componentName: name},
-          state: {value: component.state.randomResults[ind]},
+          doenetAttributes: {componentAlias: name},
+          state: {value: this.state.randomResults[ind]},
         })
       }
 
       let replacementInstruction = {
         changeType: "add",
         changeTopLevelReplacements: true,
-        firstReplacementInd: component.replacements.length,
+        firstReplacementInd: this.replacements.length,
         numberReplacementsToReplace: 0,
         serializedReplacements: newReplacements,
       }
@@ -303,13 +312,13 @@ export default class GenerateRandomNumbers extends CompositeComponent {
     }
     
     // update values of the remainder of the replacements
-    let numUpdate = Math.min(component.replacements.length, component.state.randomResults.length);
+    let numUpdate = Math.min(this.replacements.length, this.state.randomResults.length);
 
     for(let ind=0; ind<numUpdate; ind++) {
       let replacementInstruction = {
         changeType: "updateStateVariables",
-        component: component.replacements[ind],
-        stateChanges: {value: component.state.randomResults[ind]}
+        component: this.replacements[ind],
+        stateChanges: {value: this.state.randomResults[ind]}
       }
       replacementChanges.push(replacementInstruction);
     }

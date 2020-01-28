@@ -17,18 +17,16 @@ class DoenetPage extends Component {
     this.contentId = url.searchParams.get("contentId");
 
 
-    const loadFromContentIdUrl='/open_api/loadFromContentId.php';
+    const loadFromContentIdUrl='/api/loadFromContentId.php';
     const data={
       contentId: this.contentId,
     }
-    // const payload = {
-    //   params: data
-    // }
-    // console.log(payload);
-    
-    // axios.get(loadFromContentIdUrl,payload)
-    axios.post(loadFromContentIdUrl,data)
+    const payload = {
+      params: data
+    }
+    axios.get(loadFromContentIdUrl,payload)
     .then(resp=>{
+      console.log(resp.data);
       this.doenetML = resp.data.doenetML;
       this.forceUpdate();
     });
@@ -57,9 +55,7 @@ class DoenetPage extends Component {
             <DoenetViewer 
             key={"doenetviewer"} 
             free={{doenetCode: this.doenetML}} 
-            contentId={this.contentId} 
-            showCollaboration={true}
-            />
+            contentId={this.contentId} />
       </React.Fragment>);
   }
 }

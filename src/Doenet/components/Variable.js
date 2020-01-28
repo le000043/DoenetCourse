@@ -3,48 +3,47 @@ import MathComponent from './Math';
 export default class Variable extends MathComponent {
   static componentType = "variable";
 
-  // TODO: how to add this feature?
   static additionalStateVariablesForProperties = ["validVariable"];
 
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.validVariable = {
-      returnDependencies: () => ({
-        value: {
-          dependencyType: "stateVariable",
-          variableName: "value"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-
-        // to be a valid variable, tree must be either
-        // - a string other than long underscore, or
-        // - a string with a subscript that is a string or a number
-        let tree = dependencyValues.value.tree;
-        let validVariable = true;
-        if (typeof tree === "string") {
-          if (tree === '\uFF3F') {  // long underscore
-            validVariable = false;
-          }
-        } else if (!Array.isArray(tree) ||
-          tree[0] !== '_' ||
-          (typeof tree[1] !== "string") ||
-          ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
-        ) {
-          validVariable = false;
-        }
-        if (!validVariable) {
-          console.warn("Invalid value of a " + this.componentType);
-        }
-
-        return { newValues: { validVariable } }
+  updateState(args={}) {
+    if(args.init) {
+      if(this._state.validVariable === undefined) {
+        this._state.validVariable = {};
       }
+      this._state.validVariable.trackChanges = true;
+    }
+    super.updateState(args);
+
+    if(!this.childLogicSatisfied || this.unresolvedState.value) {
+      this.unresolvedState.validVariable = true;
+      return;
     }
 
-    return stateVariableDefinitions;
-  }
+    if(this.currentTracker.trackChanges.getVariableChanges({
+      component: this, variable: "value"
+    })) {
 
+      delete this.unresolvedState.validVariable;
+
+      // to be a valid variable, tree must be either
+      // - a string other than long underscore, or
+      // - a string with a subscript that is a string or a number
+      let tree = this.state.value.tree;
+      this.state.validVariable = true;
+      if(typeof tree === "string") {
+        if(tree === '\uFF3F') {  // long underscore
+          this.state.validVariable = false;
+        }
+      }else if(!Array.isArray(tree) ||
+        tree[0] !== '_' ||
+        (typeof tree[1] !== "string") ||
+        ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
+      ) {
+        this.state.validVariable = false;
+      }
+      if(!this.state.validVariable) {
+        console.warn("Invalid value of a " + this.componentType);
+      }
+    }
+  }
 }

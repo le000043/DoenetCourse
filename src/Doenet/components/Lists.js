@@ -4,14 +4,19 @@ import BaseComponent from './abstract/BaseComponent';
 export class Ol extends BlockComponent {
   static componentType = "ol";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({ standardComponentTypes }) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.label = { default: undefined };
     return properties;
   }
-
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: "atLeastZeroLis",
@@ -59,8 +64,12 @@ export class Ul extends Ol {
 export class Li extends BaseComponent {
   static componentType = "li";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let atLeastZeroInline = childLogic.newLeaf({
       name: "atLeastZeroInline",

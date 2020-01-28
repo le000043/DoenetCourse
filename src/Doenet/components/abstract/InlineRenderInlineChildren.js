@@ -3,8 +3,12 @@ import InlineComponent from './InlineComponent';
 export default class InlineRenderInlineChildren extends InlineComponent {
   static componentType = "_inlinerenderinlinechildren";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: "AtLeastZeroInline",

@@ -18,8 +18,12 @@ export default class AttractToGrid extends ConstraintComponent {
     };
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: "atMostOneString",

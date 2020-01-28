@@ -4,16 +4,22 @@ import me from 'math-expressions';
 export default class CobwebPolyline extends Polyline {
   static componentType = "cobwebpolyline";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.attractthreshold = {default: 0.5};
     properties.nPoints = {default: 1};
     return properties;
   }
 
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.deleteAllLogic();
 

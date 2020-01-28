@@ -4,16 +4,16 @@ import {getVariantsForDescendants} from '../utils/variants';
 export default class Document extends BaseComponent {
   static componentType = "document";
 
-  static createsVariants = true;
-
-  static alwaysSetUpVariant = true;
-  
   static createPropertiesObject() {
     return {title: {default: "", componentType: "text"}};
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let atMostOneMeta = childLogic.newLeaf({
       name: "atMostOneMeta",
@@ -41,33 +41,10 @@ export default class Document extends BaseComponent {
   }
 
 
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = {};
-
-    stateVariableDefinitions.childrenWhoRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "anything"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
-    }
-
-    return stateVariableDefinitions;
-  }
-
   updateState(args={}) {
     if(args.init) {
       this.makePublicStateVariable({
-        variableName: "creditAchieved",
+        variableName: "creditachieved",
         componentType: "number",
         additionalProperties: {
           displaydigits: 3,
@@ -97,11 +74,11 @@ export default class Document extends BaseComponent {
         arrayIndex: 1
       })
 
-      if(!this._state.creditAchieved.essential) {
-        this.state.creditAchieved = 0;
-        this._state.creditAchieved.essential = true;
+      if(!this._state.creditachieved.essential) {
+        this.state.creditachieved = 0;
+        this._state.creditachieved.essential = true;
       }
-      this.state.percentcreditachieved = this.state.creditAchieved*100;
+      this.state.percentcreditachieved = this.state.creditachieved*100;
 
       this.state.submissionNumber = 0;
       this.state.previousSubmissionNumber = 0;
@@ -160,8 +137,8 @@ export default class Document extends BaseComponent {
       if(this.externalFunctions.submitResults) {
         this.externalFunctions.submitResults({
           itemNumber:scoredItemNumber,
-          documentCreditAchieved: this.state.creditAchieved,
-          itemCreditAchieved: scoredComponent.state.creditAchieved,
+          documentCreditAchieved: this.state.creditachieved,
+          itemCreditAchieved: scoredComponent.state.creditachieved,
           serializedItem: scoredComponent.serialize({savingJustOneComponent: scoredComponent.componentName }),
           callBack: x => this.submitResultsCallBack({results: x, scoredComponent}),
         });
@@ -211,7 +188,6 @@ export default class Document extends BaseComponent {
   }
 
   calculateScoredItemNumberOfContainer(component) {
-    console.warn('calculateScoreItemNumberOfContainer no longer works without ancestor components')
     let ancestors = [...component.ancestors.slice(0, -1).reverse(), component];
     let scoredComponent;
     let scoredItemNumber;
@@ -248,11 +224,11 @@ export default class Document extends BaseComponent {
 
     for(let component of this.descendantsFound.scoredComponents) {
       let weight = component.state.weight;
-      creditSum += component.state.creditAchieved * weight;
+      creditSum += component.state.creditachieved * weight;
       totalWeight += weight;
     }
-    this.state.creditAchieved = creditSum / totalWeight;
-    this.state.percentcreditachieved = this.state.creditAchieved*100;
+    this.state.creditachieved = creditSum / totalWeight;
+    this.state.percentcreditachieved = this.state.creditachieved*100;
   }
 
   submitAllAnswers() {
@@ -313,18 +289,61 @@ export default class Document extends BaseComponent {
     if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.section({
         key: this.componentName,
-        title: this.stateValues.title,
+        title: this.state.title,
         level: 0,
-        // viewedSolution: this.state.viewedSolution,
+        viewedSolution: this.state.viewedSolution,
       });
     }
   }
 
   updateRenderer(){
     this.renderer.updateSection({
-      title: this.stateValues.title,
-      // viewedSolution: this.state.viewedSolution,
+      title: this.state.title,
+      viewedSolution: this.state.viewedSolution,
     });
+  }
+
+  updateChildrenWhoRender(){
+    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
+  }
+
+  static previewSerializedComponent({serializedComponent, sharedParameters, components}) {
+    if(serializedComponent.children === undefined) {
+      [];
+    }
+    
+    let variantControlInd;
+    let variantControlChild;
+    for(let [ind,child] of serializedComponent.children.entries()) {
+      if(child.componentType === "variantcontrol") {
+        variantControlInd = ind;
+        variantControlChild = child;
+        break;
+      }
+    }
+
+    let creationInstructions = [];
+
+    if(variantControlInd !== undefined) {
+      // if have desired variant value or index
+      // add that information to variantControl child
+      let desiredVariant = serializedComponent.variants.desiredVariant;
+      if(desiredVariant !== undefined) {
+        if(desiredVariant.index !== undefined) {
+          variantControlChild.variants.desiredVariantNumber = desiredVariant.index;
+        }else if(desiredVariant.value !== undefined) {
+          variantControlChild.variants.desiredVariant = desiredVariant.value;
+        }
+      }
+      creationInstructions.push({createChildren: [variantControlInd]});
+      if(serializedComponent.variants.uniquevariants) {
+        sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+      }
+    }
+    creationInstructions.push({callMethod: "setUpVariant"})
+
+    return creationInstructions;
+
   }
 
   static setUpVariant({serializedComponent, sharedParameters, definingChildrenSoFar,
@@ -416,10 +435,10 @@ export default class Document extends BaseComponent {
    
     }else {
       // get parameters from variant control child
-      sharedParameters.variant = variantcontrolChild.state.selectedVariant.value;
-      sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber.value;
-      sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
+      sharedParameters.variant = variantcontrolChild.state.selectedVariant;
+      sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber;
+      sharedParameters.selectRng = variantcontrolChild.getRng();
+      sharedParameters.allPossibleVariants = variantcontrolChild.state.variants;
       // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
     }
 

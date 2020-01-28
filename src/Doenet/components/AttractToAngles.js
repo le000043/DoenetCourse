@@ -9,8 +9,12 @@ export default class AttractToAngles extends ConstraintComponent {
     };
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let addAngles = function({activeChildrenMatched}) {
       // add <angles> around children
