@@ -225,7 +225,7 @@ class DoenetAdmin extends Component {
           // this.state.grade=+(resp.data["grade"])
           // this.state.syllabus=+(resp.data["syllabus"])
           // this.state.assignment=+(resp.data["assignment"])
-          
+
           // if (!this.assignment_state_1){
           //   this.state.assignment=false;
           // }
@@ -678,7 +678,8 @@ saveTree(){
       headerID_array_to_payload:headerID_array_to_payload,
       headerID_name:headerID_name,
       headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
-      headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload
+      headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
+      courseId:"aI8sK4vmEhC5sdeSP3vNW"
     }
 
     axios.post(urlGetCode,data)

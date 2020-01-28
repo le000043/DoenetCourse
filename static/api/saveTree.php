@@ -18,6 +18,7 @@ $headerID_array_to_payload = array();
 $headerID_parentId_array_to_payload = array();
 $headerID_childrenId_array_to_payload = array();
 $headerID_name = array();
+$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 
 foreach ($_POST["assignmentId_array"] as $post_element) {
     $assignmentId_array_element = mysqli_real_escape_string($conn,$post_element);
@@ -73,7 +74,7 @@ while ($iterator < $HeadingSize) {
   if ($headerID_childrenId_array_to_payload[$iterator]=="NULL"){
     $headerID_childrenId_array_to_payload[$iterator] = NULL;
   }
-  $string = $string."(\"".$headerID_array_to_payload[$iterator]."\",\"".$headerID_name[$iterator]."\",\"".$headerID_parentId_array_to_payload[$iterator]."\",\"".$headerID_childrenId_array_to_payload[$iterator]."\",\"".'aI8sK4vmEhC5sdeSP3vNW'."\")";
+  $string = $string."(\"".$headerID_array_to_payload[$iterator]."\",\"".$headerID_name[$iterator]."\",\"".$headerID_parentId_array_to_payload[$iterator]."\",\"".$headerID_childrenId_array_to_payload[$iterator]."\",\"".$courseId."\")";
   if ($iterator<$HeadingSize-1){
     $string = $string.",";
   }
