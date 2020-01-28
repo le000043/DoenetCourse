@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import DoenetViewer from '../React/DoenetViewer';
-import axios from 'axios';
-import MersenneTwister from 'mersenne-twister';
-import './admin.css';
 import nanoid from 'nanoid';
+import axios from 'axios';
+import './admin.css';
 import DoenetHeader from './DoenetHeader';
 import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,14 +20,18 @@ function hashStringToInteger(s) {
 let assignmentID = null;
 
 class DoenetAdmin extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-     console.log("===RESTART===")
-    this.assignmentIndex = 0;
-    this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
-
-      const envurl='/api/env.php';
-      axios.get(envurl)
+    this.state = {
+      branchIdsSelected: [],
+      assignments: [],
+      courseId: "aI8sK4vmEhC5sdeSP3vNW",
+      keyStorageStatus: null,
+      rename: {},
+      edit: {},
+    };
+    const url='/api/env.php';
+        axios.get(url)
         .then(resp=>{
             this.username = resp.data.user;
             this.access = resp.data.access;
@@ -187,6 +189,9 @@ class DoenetAdmin extends Component {
 
 
     
+    let prevLoopLevel = 1;
+    let potentialParentHeadingId = "";
+    for(let i = 0; i < data.headingText.length; i++){
 
       const loadUrl = '/api/loadEnable.php'
       this.payLoad = {
@@ -251,23 +256,90 @@ class DoenetAdmin extends Component {
           // console.log("done")
           // this.forceUpdate()
 
-        });
-         
-    this.courseInfo = {};
-    this.finishedContructor = false;
- 
+        let baseObj = this.courseInfo[courseId];
+        for (let headingId of parentHeadingIds){
+            baseObj = baseObj.heading[headingId];
+        }
+        if (baseObj.headingsOrder === undefined){
+            baseObj.headingsOrder = [];
+            baseObj.heading = {};
+        }
+        
+        // Add the heading information to the base object
+        baseObj.headingsOrder.push({
+                courseHeadingId:headingId,
+                headingText:headingText,
+            });
+        baseObj.heading[headingId] = {};
+        if (data.assignments[headingId] !== undefined){
+                baseObj.heading[headingId].assignmentOrder = [];
+                baseObj.heading[headingId].assignments = {};
+                for (let assignmentInfo of data.assignments[headingId]){
+                    if(assignmentInfo.individualize === "1"){
+                        assignmentInfo.individualize = true;
+                    }else if(assignmentInfo.individualize === "0"){
+                        assignmentInfo.individualize = false;
+                    }
+                    if(assignmentInfo.multipleAttempts === "1"){
+                        assignmentInfo.multipleAttempts = true;
+                    }else if(assignmentInfo.multipleAttempts === "0"){
+                        assignmentInfo.multipleAttempts = false;
+                    }
+                    if(assignmentInfo.showSolution === "1"){
+                        assignmentInfo.showSolution = true;
+                    }else if(assignmentInfo.showSolution === "0"){
+                        assignmentInfo.showSolution = false;
+                    }
+                    if(assignmentInfo.showFeedback === "1"){
+                        assignmentInfo.showFeedback = true;
+                    }else if(assignmentInfo.showFeedback === "0"){
+                        assignmentInfo.showFeedback = false;
+                    }
+                    if(assignmentInfo.showHints === "1"){
+                        assignmentInfo.showHints = true;
+                    }else if(assignmentInfo.showHints === "0"){
+                        assignmentInfo.showHints = false;
+                    }
+                    if(assignmentInfo.showCorrectness === "1"){
+                        assignmentInfo.showCorrectness = true;
+                    }else if(assignmentInfo.showCorrectness === "0"){
+                        assignmentInfo.showCorrectness = false;
+                    }
+                    if(assignmentInfo.proctorMakesAvailable === "1"){
+                        assignmentInfo.proctorMakesAvailable = true;
+                    }else if(assignmentInfo.proctorMakesAvailable === "0"){
+                        assignmentInfo.proctorMakesAvailable = false;
+                    }
+                baseObj.heading[headingId].assignmentOrder.push(assignmentInfo.assignmentId);
+                baseObj.heading[headingId].assignments[assignmentInfo.assignmentId] = {
+                    documentName:assignmentInfo.assignmentName,
+                    docTags:[],
+                    contentId:assignmentInfo.contentId,
+                    sourceBranchId:assignmentInfo.sourceBranchId,
+                    assignedDate:assignmentInfo.assignedDate,
+                    dueDate:assignmentInfo.dueDate,
+                    gradeCategory:assignmentInfo.gradeCategory,
+                    totalPointsOrPercent:assignmentInfo.totalPointsOrPercent,
+                    coverPageHTML:assignmentInfo.coverPageHTML,
+                    latestPublishedContentTest:assignmentInfo.latestPublishedContentTest,
+                    individualize:assignmentInfo.individualize,
+                    multipleAttempts:assignmentInfo.multipleAttempts,
+                    showSolution:assignmentInfo.showSolution,
+                    showFeedback:assignmentInfo.showFeedback,
+                    showHints:assignmentInfo.showHints,
+                    showCorrectness:assignmentInfo.showCorrectness,
+                    proctorMakesAvailable:assignmentInfo.proctorMakesAvailable,
+                    
+                };
+            }
+            
+        }
 
 
-    
-      //Get code and mode from the database
-    const loadOutlineUrl='/api/loadOutline.php';
-    const data={
-      courseId: this.courseId,
-    }
-    const payload = {
-      params: data
-    }
-
+        prevLoopLevel = headingLevel;
+        potentialParentHeadingId = headingId;
+    })
+  
     
 
 
@@ -291,7 +363,7 @@ class DoenetAdmin extends Component {
     this.addAssignmentIdsUnderHeader = this.addAssignmentIdsUnderHeader.bind(this)
     this.axiosDeleteAssignmentFromDB = this.axiosDeleteAssignmentFromDB.bind(this)
   }
-
+  }
   buildTreeArray(){
     //console.log(this.arr_return[this.id_arr.indexOf(this.id_arr[0])][this.id_arr[0]])
     // first get pId that is null
@@ -1196,17 +1268,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // }else if (this.activeSection==="syllabus"){
     //   this.setState({syllabus:this.enabledDisabledArray[this.activeSection]})
     // }
-    const url = '/api/save_enable_disable_category.php'
-    console.log(this.state.overview)
-    console.log(this.state.grade)
-    console.log(this.state.syllabus)
-    console.log(this.state.assignment)
 
-    const data = {
-      overview:Number(this.state.overview),
-      grade:Number(this.state.grade),
-      syllabus:Number(this.state.syllabus),
-      assignment:Number(this.state.assignment)
+    if (this.state.branchIdsSelected.length === 0) { alert("You need to select content to make an assignment"); return; }
+    let documentNameArray = [];
+    let assignmentIdArray = [];
+    let branchIdArray = [];
+    let gradeCategory = this.gradeCategories[0];
+    let baseObj = this.courseInfo[this.state.courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
     }
     console.log(data)
     axios.post(url, data)
@@ -1244,9 +1315,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.updateLocationBar({activeSection:null})
       }
     }
+    for (let branchId of this.state.branchIdsSelected) {
+      let assignmentId = nanoid();
 
+      baseObj.assignmentOrder.push(assignmentId);
+      baseObj.assignments[assignmentId] = {};
+    }
   }
-
   updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
     console.log("inside updateLocationBar")
     history.replaceState({},"title","?active="+activeSection);
@@ -1262,27 +1337,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.buildTree()
   }
 
-  loadOverview(){
-    this.doenetML="";
-    const phpUrl='/api/getDoenetML.php';
-    const data={        
-      branchId: this.overview_branchId,
-      contentId:"",
-      ListOfContentId:"", //this is to store all contentID of one branchID for publish indication 
-      List_Of_Recent_doenetML:[], // this is to store list of (date:doenetML) 
-    }
-    const payload = {
-      params: data
-    }
-    axios.get(phpUrl,payload)
-      .then(resp=>{
-        let doenetML = resp.data.doenetML;
-        this.updateNumber++;
-        this.doenetML=doenetML;
-        this.forceUpdate();
-      })
-      .catch(error=>{this.setState({error:error})});
-  }
+     // let code = this.sharedContent[branchId].code;
+     // baseObj.assignments[assignmentId].code = code;
 
   buildOverview(){
     this.mainSection = this.loadingScreen;
@@ -1307,32 +1363,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.mainSection = this.overview;
   }
 
-  loadSyllabus(){
-    console.log("LOAD Syllabus")
-    this.doenetML="";
-    console.log("branch id...")
-    console.log(this.syllabus_branchId)
-    const phpUrl='/api/getDoenetML.php';
-    const data={        
-      branchId: this.syllabus_branchId,
-      contentId:"",
-      ListOfContentId:"", //this is to store all contentID of one branchID for publish indication 
-      List_Of_Recent_doenetML:[], // this is to store list of (date:doenetML) 
-    }
-    const payload = {
-      params: data
-    }
-    axios.get(phpUrl,payload)
-      .then(resp=>{
-        let doenetML = resp.data.doenetML;
-        console.log("doenetML!!!!!!!!!!!!");
-        console.log(doenetML);
-        this.updateNumber++;
-        this.doenetML=doenetML;
-        this.forceUpdate();
-      })
-      .catch(error=>{this.setState({error:error})});
-  }
+      baseObj.assignments[assignmentId].sourceBranchId = branchId;
 
   buildSyllabus(){
     this.mainSection = this.loadingScreen;
@@ -1363,59 +1394,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.selectedAssignmentId=""
     if (this.finishedContructor === false) {return null;}
 
-    let disablePrev = false;
-    if (this.assignmentIndex === 0){disablePrev = true;}
-    let disableNext = false;
-    if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
-
-    console.log("-----------this.assignmentObj-------------");
+      documentNameArray.push(documentName);
+      assignmentIdArray.push(assignmentId);
+      branchIdArray.push(branchId);
     
-    console.log(this.assignmentObj);
 
-    let solutionType = "button";
-    if (Number(this.assignmentObj.showSolution) === 0){
-      solutionType = "none";
-    }
-    let showHints = true;
-    if (Number(this.assignmentObj.showHints) === 0){
-      showHints = false;
-    }
-    let showFeedback = true;
-    if (Number(this.assignmentObj.showFeedback) === 0){
-      showFeedback = false;
-    }
-    let showCorrectness = true;
-    if (Number(this.assignmentObj.showCorrectness) === 0){
-      showCorrectness = false;
-    }
-    // TODO: what assignment get un-publish ?
-    console.log("assignment ID OVER HERE !!!!")
-    assignmentID = this.assignmentObj.assignmentId;
-    this.assignmentFragment = <React.Fragment>
-      <div className="assignmentContainer">     
-        <div className="assignmentActivity">
-              {this.assignmentObj.assignmentId?<DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} 
-              free={{
-                doenetCode: this.assignmentObj.code,
-                doenetState: this.assignmentObj.latestDocumentState,
-                requestedVariant:{index:this.assignmentObj.assignedVariant},
-              }} 
-              assignmentId={this.assignmentObj.assignmentId}
-              creditUpdate={this.creditUpdate}
-              attemptNumber={this.assignmentObj.attemptNumber}
-              mode={{
-                solutionType:solutionType,
-                allowViewSolutionWithoutRoundTrip:false,
-                showHints,
-                showFeedback,
-                showCorrectness,
-              }}
-              course={true}
-              />:<p>Loading...</p>}
-        </div>
-      </div>
-    </React.Fragment>;
+    //Save in Database
+    // console.log(documentNameArray);
+    // console.log(assignmentIdArray);
+    // console.log(branchIdArray);
+
 
     this.mainSection = this.assignmentFragment;
     console.log("from build assignment")
@@ -1423,513 +1411,181 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.forceUpdate();
   }
 
-  loadGrades(){
-    this.scores = {};
-    this.subTotals = {};
-      
-      const loadGradsUrl='/api/loadGradsLearner.php';
-      
-      // this.courseId
-      const data={
-        courseId: this.courseId,
-      }
-      const payload = {
-        params: data
-      }
-      
-      
-      axios.get(loadGradsUrl,payload)
-        .then(resp=>{
-          this.assignmentsData = resp.data.grades;
-          this.student = resp.data.student;
-          this.course = resp.data.course;
-          this.section = resp.data.section;
-          this.group = resp.data.group;
-          this.forceUpdate();
-          
-        })
-        .catch(error=>{this.setState({error:error})});
-  }
-  
-  buildGrades(){
-    
-    if (this.assignmentsData === null){
-      this.mainSection = this.loadingScreen;
-    }else{
-      this.buildGradesHelper();
+  //     this.saveCourseOutlineToAPI();
+
+  //   this.forceUpdate();
+  // }
+
+  // deleteAssignment({assignmentId}){
+  //   this.props.courseInfo[this.state.courseId].assignmentOrder =
+  //       this.props.courseInfo[this.state.courseId].assignmentOrder.filter(value => value !== assignmentId);
+  //   delete this.props.courseInfo[this.state.courseId].assignments[assignmentId];
+  //   this.forceUpdate();
+  // }
+
+
+  saveCourseOutlineToAPI() {
+    const url = '/api/saveCourseOutline.php';
+    const data = {
+      courseInfo: this.courseInfo[this.state.courseId],
+      courseId: this.state.courseId,
     }
 
-    
+    console.log("save course outline data");
+    console.log(data);
+
+
+    axios.post(url, data)
+      .then(resp => {
+        console.log("Saved course outline!");
+        console.log(resp);
+        console.log(resp.data);
+
+
+      })
+      .catch(error => { this.setState({ error: error }) });
   }
 
-  buildGradesHelper(){
-    
-    this.total = {possible:0,score:0,percentage:'0%'}
 
-    for (let gcat of this.gradeCategories){
-      this.scores[gcat] = [];
-      this.subTotals[gcat] = {possible:0,score:0,percentage:'0%'};
 
-      for (let dObj of this.assignmentsData){
-        if (dObj.gradeCategory === gcat){
-          let possible = dObj.totalPointsOrPercent;
-          let percentFLAG = false;
-          if (possible === null){
-            possible = '--';
-            percentFLAG = true;
-          }else{
-            possible = Number(possible);
-            this.subTotals[gcat].possible += possible;
-          }
-          let score = dObj.credit;
-          if (score === null || possible === null){
-            score = '--';
-            percentFLAG = true;
-          }else{
-            score = Number(score)*possible;
-            if (!isNaN(score)){
-              this.subTotals[gcat].score += score;
-            }
-          }
-          let percentage;
-          if (percentFLAG){
-            percentage = '--';
-          }else{
-            percentage = Math.round(score/possible*1000)/10 + '%';
-          }
-
-          if (isNaN(score)){
-            score = "--";
-          }
-
-          this.scores[gcat].push({gradeItem:dObj.assignmentName,
-            assignmentId:dObj.assignmentId,
-            possible:possible,
-            score:score,
-            percentage:percentage
-          });
-        }
-      }
-
-      if (this.subTotals[gcat].score > 0 && this.subTotals[gcat].possible > 0){
-        this.subTotals[gcat].percentage = Math.round(this.subTotals[gcat].score / this.subTotals[gcat].possible*1000)/10 + '%';
-        this.total.score += Number(this.subTotals[gcat].score);
-        this.total.possible += Number(this.subTotals[gcat].possible);
-      }
-      
+  insertHeading({ headingIdArray }) {
+    let baseObj = this.courseInfo[this.state.courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
     }
-    this.total.percentage = '0%';
-    if(!isNaN(this.total.score / this.total.possible*1000)/10){
-      this.total.percentage = Math.round(this.total.score / this.total.possible*1000)/10 + '%';
+    //define assignmentOrder and assignments
+    if (baseObj.headingsOrder === undefined) {
+      baseObj.headingsOrder = [];
+      baseObj.heading = {};
     }
- 
-    //talk to database to load fresh info
-    this.overview = (<React.Fragment>
-      <h2 data-cy="sectionTitle">Grades</h2>
-      <div style={{marginLeft:"10px"}}>
-        <div>Student: {this.student}</div>
-        {/* <div>Course: {this.course}</div> */}
-        <div>Section: {this.section}</div>
-        {this.group !== '' ? <div>Group: {this.group}</div> : null}
-      </div>
-      
-      
+    let courseHeadingId = nanoid();
+    let defaultHeadingText = "Untitled Heading";
+    baseObj.headingsOrder.unshift({
+      courseHeadingId: courseHeadingId,
+      headingText: defaultHeadingText
+    });
+    baseObj.heading[courseHeadingId] = {};
+    let headingLevel = headingIdArray.length + 1;
+    let parentHeadingId = headingIdArray[(headingIdArray.length - 1)];
 
-      <table id="grades">
-      <tbody>
-        <tr className="colHeadingsRow">
-          <th width="581">Grade item</th>
-          <th width="75">Possible points</th>
-          <th width="56">Score</th>
-          <th width="95">Percentage</th>
-        </tr>
+      this.saveCourseOutlineToAPI();
 
-      { this.gradeCategories.map( cat => <React.Fragment key={'option'+cat}>
-      
-        <tr>
-          <td className="typeHeadingRow" colSpan="4">{cat}</td>
-        </tr>
-     
-
-        {this.scores[cat].map(
-          (score)=><React.Fragment key={'score_row'+score.assignmentId}>
-          <tr className="typeDataRow"> 
-            <td><span className="assignmentLink" onClick={()=>{
-              this.buildAssignmentGrades({assignment:score});
-              
-            }}>{score.gradeItem}</span></td>
-            <td>{score.possible}</td>
-            <td>{score.score}</td>
-            <td>{score.percentage}</td>
-          </tr>
-          </React.Fragment>
-        )}
-
-        <tr className="typeSubTotalDataRow"> 
-          <td><span>Subtotal for {cat}</span></td>
-          <td>{this.subTotals[cat].possible}</td>
-          <td>{this.subTotals[cat].score}</td>
-          <td>{this.subTotals[cat].percentage}</td>
-        </tr>
-        
-
-      </React.Fragment>)}
-
-        
-        <tr className="colTotalRow">
-          <td>Total</td>
-          <td>{this.total.possible}</td>
-          <td>{this.total.score}</td>
-          <td>{this.total.percentage}</td>
-        </tr>
-       
-        </tbody>
-      </table>
-    </React.Fragment>)
-    this.mainSection = this.overview;
-  }
-
-  buildAssignmentGrades({assignment}){
-    this.mainSection = this.loadingScreen;
-    this.assignment = assignment;
-    this.assignmentId = assignment.assignmentId;
-
-      const url='/api/loadItemGrades.php';
-      
-      const data={
-        courseId: this.courseId,
-        assignmentId: assignment.assignmentId,
-      }
-      const payload = {
-        params: data
-      }
-      
-      
-      axios.get(url,payload)
-        .then(resp=>{
-          this.assignmentItems = resp.data.assignmentItems;
-
-          this.latestAttemptNumber = resp.data.attemptNumber;
-          this.latestAttemptCredit = resp.data.attemptCredit;
-
-          this.buildAssignmentGradesHelper();
-        })
-        .catch(error=>{this.setState({error:error})});
-  }
-
-  buildAssignmentGradesHelper(){
-    let latestAttemptPercentage = Math.round(Number(this.latestAttemptCredit)*10000,2)/100;
-    latestAttemptPercentage = `${latestAttemptPercentage}%`;
-    for (var item of this.assignmentItems){
-      let percentage = Math.round(Number(item.credit)*10000,2)/100;
-      item.percentage = `${percentage}%`;
-      
-    }
-
-
-    this.mainSection = (<React.Fragment>
-      <button onClick={()=>{
-        this.buildGradesHelper({data:this.assignmentsData});
-      }}>Back to grades</button>
-      <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}</h2>
-      {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
-
-      <table id="grades" style={{width:"400px"}}>
-      <tbody>
-        <tr className="colHeadingsRow">
-          <th width="581">Grade item</th>
-          <th width="95">Percentage</th>
-        </tr>
-
-        {this.assignmentItems.map(
-          (item)=><React.Fragment key={'assignmentItem'+item.title}>
-          <tr className="typeDataRow"> 
-            <td><span className="assignmentLink" onClick={()=>{
-              // this.buildAssignmentGrades({assignment:score});
-              this.buildItemGrade({item});
-              
-            }}>{item.title}</span></td>
-            <td>{item.percentage}</td>
-          </tr>
-          </React.Fragment>
-        )}
-
-        
-        {this.latestAttemptNumber > 1 ? 
-          <tr className="colTotalRow">
-            <td>Total for attempt {this.latestAttemptNumber}</td>
-          <td>{latestAttemptPercentage}</td>
-          </tr>
-          : null }
-          
-        <tr className="colTotalRow">
-          <td>Total</td>
-          <td>{this.assignment.percentage}</td>
-        </tr>
-        </tbody>
-        </table>
-      </React.Fragment>);
-
-    this.forceUpdate();
-
-  }
-
-  buildItemGrade({item}){
-
-
-    const url='/api/loadItemAttemptGrades.php';
-      
-      // this.courseId
-      const data={
-        assignmentId: this.assignmentId,
-        itemNumber: item.itemNumber,
-        attemptNumber: this.latestAttemptNumber,
-      }
-      const payload = {
-        params: data
-      }
-      
-      
-      axios.get(url,payload)
-        .then(resp=>{
-          
-          this.buildAttemptItemGradesHelper({
-            itemTitle:item.title,
-            itemState:resp.data.itemState,
-            submissionNumber:resp.data.submissionNumber,
-            submittedDate:resp.data.submittedDate,
-            valid:resp.data.valid,
-            });
-        })
-        .catch(error=>{this.setState({error:error})});
-    
-  }
-
-  buildAttemptItemGradesHelper({itemTitle, itemState, submissionNumber, submittedDate, valid, }){
-    console.log('itemState');
-    console.log(itemState);
-    
-    this.mainSection = (<React.Fragment>
-      <button onClick={()=>{
-        this.buildGradesHelper({data:this.assignmentsData});
-      }}>Back to grades</button>
-      <button onClick={()=>{
-        this.buildAssignmentGradesHelper();
-      }}>Back to {this.assignment.gradeItem}</button>
-    <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}: {itemTitle}</h2>
-      {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
-
-            <DoenetViewer 
-            key={"doenetviewer"} 
-            free={{
-            doenetState: itemState,
-          }} 
-          course={true}
-            attemptNumber={this.latestAttemptNumber}
-              mode={{
-                solutionType:"displayed",
-                allowViewSolutionWithoutRoundTrip:false,
-                showHints:false,
-                showFeedback:true,
-                showCorrectness:true,
-                interactive:false,
-              }}
-            />
-
-    </React.Fragment>);
     this.forceUpdate();
   }
 
-  setAssignmentObj({outlineType}){
-    if (outlineType === "outline"){
-      this.assignmentObj = this.assignmentIdList[this.assignmentIndex];
-    } else if (outlineType === "assignment"){
-      this.assignmentObj = this.assignmentAssignedList[this.assignmentIndex];
-    } else if (outlineType === "due"){
-      this.assignmentObj = this.assignmentDueList[this.assignmentIndex];
-    } 
+  moveHeadingDown({ courseId, headingIdArray, index }) {
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    let indexHeadingObj = baseObj.headingsOrder[index];
+
+
+    let prevHeadingId = indexHeadingObj.courseHeadingId;
+    let courseHeadingId = baseObj.headingsOrder[index + 1].courseHeadingId;
+    let nextHeadingId = "";
+    //If there is a nextHeading at this level set nextHeadingId
+    if (Number(index) + 2 < baseObj.headingsOrder.length) {
+      nextHeadingId = baseObj.headingsOrder[index + 2].courseHeadingId;
+    }
+    //copy heading below to index's position
+    baseObj.headingsOrder[index] = baseObj.headingsOrder[index + 1];
+    //put index into heading below
+    baseObj.headingsOrder[index + 1] = indexHeadingObj;
+
+
+
+      this.saveCourseOutlineToAPI();
+
+
+    this.forceUpdate();
   }
 
+  moveHeadingUp({ courseId, headingIdArray, index }) {
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    let indexHeadingObj = baseObj.headingsOrder[index];
+
+    let courseHeadingId = indexHeadingObj.courseHeadingId;
+    let prevHeadingId = baseObj.headingsOrder[index - 1].courseHeadingId;
+    let nextHeadingId = "";
+    //If there is a nextHeading at this level set nextHeadingId
+    if (Number(index) + 1 < baseObj.headingsOrder.length) {
+      nextHeadingId = baseObj.headingsOrder[index + 1].courseHeadingId;
+    }
+
+    //copy heading below to index's position
+    baseObj.headingsOrder[index] = baseObj.headingsOrder[index - 1];
+    //put index into heading below
+    baseObj.headingsOrder[index - 1] = indexHeadingObj;
 
 
-  updateAssignmentList({outlineType}) {
-    if (outlineType === "outline"){
-      this.buildOutline({courseId:this.courseId});
-    }else if (outlineType === "assignment"){
-      this.buildAssignmentList({courseId:this.courseId});
-    }else{
-      this.buildDueList();
-    } 
+
+      this.saveCourseOutlineToAPI();
+
+
+    this.forceUpdate();
   }
 
-  resolveVariant({outlineType}){
-    
-    if (this.assignmentObj.assignedVariant === undefined || this.assignmentObj.assignedVariant === null){
-      this.assignmentObj.attemptNumber = 1;
+  //Find index of parentHeadingId then test if there is one more heading below
+  findNextHeadingId({ courseId, headingIdArray, lastHeadingId }) {
 
-      if (Number(this.assignmentObj.multipleAttempts) === 1){
+    let nextHeadingId = "";
 
-        //VariantIndex is the same offline and online
-        this.assignmentObj.assignedVariant = this.variantNumberFromAttemptNumber();
-      }else{
-        this.assignmentObj.assignedVariant = 0;
+    let baseObj = this.courseInfo[courseId];
+
+    //Find the next heading if it exists for each level until we find the closest one
+    for (let i = 0; i <= headingIdArray.length; i++) {
+
+      let headingId = headingIdArray[i];
+      if (i == headingIdArray.length) { headingId = lastHeadingId; }
+
+      if (baseObj.headingsOrder !== undefined) {
+        for (let [index, headingObj] of baseObj.headingsOrder.entries()) {
+          let headingOrderId = headingObj.courseHeadingId;
+
+          if (headingId === headingOrderId) {
+
+            if (baseObj.headingsOrder[index + 1] !== undefined) {
+              nextHeadingId = baseObj.headingsOrder[index + 1].courseHeadingId;
+
+            }
+            break;
+          }
+        }
+        baseObj = baseObj.heading[headingId];
       }
 
-     
-      //Save assignedVariant to DB
-      // no saveVariant.php
-    //   const url='/api/saveVariant.php';
-    // const data={
-    //   assignmentId: this.assignmentObj.assignmentId,
-    //   assignedVariant:this.assignmentObj.assignedVariant,
-    //   attemptNumber:this.assignmentObj.attemptNumber,
-    //   contentId:this.assignmentObj.contentId,
-    // }
-    // const payload = {
-    //   params: data
-    // }
-    // console.log("saveVariant data");
-    // console.log(data);
-    
-    
-    // axios.get(url,payload)
-    //   .then(resp=>{
-    //     console.log(resp.data);
-    //   });
-      
-    }
-    
 
-  }
-
-  variantNumberFromAttemptNumber(){
-    let preseed = this.assignmentObj.attemptNumber+this.assignmentObj.assignmentId
-    if(Number(this.assignmentObj.individualize) === 1){
-      preseed += this.username;
-    }
-    let seed = hashStringToInteger(preseed);
-
-    let rng = new MersenneTwister(seed);
-    let randomNumber = rng.random();
-    return Math.floor(randomNumber * 1000000000);
-  }
-
-  assignmentDataToCourseInfo({courseId,data}){
-        
-    this.courseInfo[courseId] = {};
-    this.courseInfo[courseId].heading = {};
-    let parentHeadingIds = [];
-    
-    let prevLoopLevel = 1;
-    let potentialParentHeadingId = "";
-    for(let i = 0; i < data.headingText.length; i++){
-
-        let headingText = data.headingText[i];
-        let headingLevel = data.headingLevel[i];
-        let headingId = data.headingId[i];
-        if (prevLoopLevel < headingLevel){
-            if (potentialParentHeadingId !== ""){
-                parentHeadingIds.push(potentialParentHeadingId);
-            }
-        }else if (prevLoopLevel > headingLevel){
-            for (var x = 0; x < (prevLoopLevel - headingLevel); x++){
-                parentHeadingIds.pop();
-            }
-        }
-        
-
-        let baseObj = this.courseInfo[courseId];
-        for (let headingId of parentHeadingIds){
-            baseObj = baseObj.heading[headingId];
-        }
-        
-        if (baseObj.headingsOrder === undefined){
-            baseObj.headingsOrder = [];
-            baseObj.heading = {};
-        }
-        
-        // Add the heading information to the base object
-        baseObj.headingsOrder.push({
-                courseHeadingId:headingId,
-                headingText:headingText,
-            });
-        baseObj.heading[headingId] = {};
-        if (data.assignments[headingId] !== undefined){
-                baseObj.heading[headingId].assignmentOrder = [];
-                baseObj.heading[headingId].assignments = {};
-                for (let assignmentInfo of data.assignments[headingId]){
-                baseObj.heading[headingId].assignmentOrder.push(assignmentInfo.assignmentId);  
-                
-                  
-                  baseObj.heading[headingId].assignments[assignmentInfo.assignmentId] = {
-                    documentName:assignmentInfo.assignmentName,
-                    code:assignmentInfo.doenetML,
-                    latestDocumentState: assignmentInfo.latestDocumentState,
-                    docTags:[],
-                    contentId:assignmentInfo.contentId,
-                    sourceBranchId:assignmentInfo.sourceBranchId,
-                    dueDate:assignmentInfo.dueDate,
-                    assignedDate:assignmentInfo.assignedDate,
-                    individualize:assignmentInfo.individualize,
-                    multipleAttempts:assignmentInfo.multipleAttempts,
-                    showSolution:assignmentInfo.showSolution,
-                    showFeedback:assignmentInfo.showFeedback,
-                    showHints:assignmentInfo.showHints,
-                    showCorrectness:assignmentInfo.showCorrectness,
-                    proctorMakesAvailable:assignmentInfo.proctorMakesAvailable,
-                    dueDateOverride:assignmentInfo.dueDateOverride,
-                    timeLimitOverride:assignmentInfo.timeLimitOverride,
-                    numberOfAttemptsAllowedOverride:assignmentInfo.numberOfAttemptsAllowedOverride,
-                    attemptNumber:assignmentInfo.attemptNumber,
-                    assignedVariant:assignmentInfo.assignedVariant,
-                    generatedVariant:assignmentInfo.generatedVariant,
-                    totalPointsOrPercent:assignmentInfo.totalPointsOrPercent,
-                    credit:assignmentInfo.credit,
-                    proctorMakesAvailable:assignmentInfo.proctorMakesAvailable,
-
-
-                };
-              
-                
-            }
-            
-        }
-
-
-        prevLoopLevel = headingLevel;
-        potentialParentHeadingId = headingId;
     }
 
+
+    return nextHeadingId;
   }
 
-  componentDidCatch(error, info){
-    this.setState({error:error,errorInfo:info});
-  }
 
-
-  generateNewAttempt(){
-      this.assignmentObj.attemptNumber++;
-      this.assignmentObj.assignedVariant = this.variantNumberFromAttemptNumber();
-      this.assignmentObj.latestDocumentState = null;
-      this.updateNumber++;
-      //Save attempt number to database
-        //Save assignedVariant to DB
-        const url='/api/saveVariant.php';
-      const data={
-        assignmentId: this.assignmentObj.assignmentId,
-        assignedVariant:this.assignmentObj.assignedVariant,
-        attemptNumber:this.assignmentObj.attemptNumber,
-        contentId:this.assignmentObj.contentId,
+  saveHeadingName({ headingId, value }) {
+      const url = '/api/renameHeading.php';
+      const data = {
+        headingId: headingId,
+        value: value,
       }
       const payload = {
         params: data
       }
-      console.log("saveVariant on Generate New Attempt data");
+      console.log("data");
       console.log(data);
-      
-      
-      axios.get(url,payload)
-        .then(resp=>{
+
+
+      axios.get(url, payload)
+        .then(resp => {
+          console.log("Saved!");
+          console.log(resp);
           console.log(resp.data);
         });
         
@@ -1974,72 +1630,108 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.forceUpdate();
   }
 
-  updateAssignmentIndex({outlineType,assignmentId=this.assignmentObj.assignmentId}){
-    this.assignmentIndex = 0;
-    console.log(assignmentId)
 
-    if (outlineType === "outline"){
-      for (let [index,assignmentObj] of this.assignmentIdList.entries()){
-        if (assignmentObj.assignmentId === assignmentId){
-          this.assignmentIndex = index;
-          break;
-        }
-      }
 
-    }else if (outlineType === "assignment"){
-      for (let [index,assignmentObj] of this.assignmentAssignedList.entries()){
-        if (assignmentObj.assignmentId === assignmentId){
-          this.assignmentIndex = index;
-          break;
+            this.courseOutlineList.push(
+              <React.Fragment key={"assignmentEditPanel" + assignmentId}>
+                <div key={"assignmentInput" + assignmentId} style={{ display: "flex" }}>
+                  <span style={{ marginLeft: assignmentIndent + "px", marginRight: "10px", display: "block", minWidth: "140px" }} >
+                    {assignmentName}
+                  </span>
+                  {updateButton}
+                  {assignmentUp}
+                  {assignmentDown}
+                  <button onClick={() => {
+                    this.handleEditAssignment({
+                      assignmentName: assignmentName,
+                      assignmentId: assignmentId,
+                      assignedDate: editAssignedDate,
+                      dueDate: editDueDate,
+                      gradeCategory: assignmentInfo.gradeCategory,
+                      totalPointsOrPercent: assignmentInfo.totalPointsOrPercent,
+                      coverPageHTML: assignmentInfo.coverPageHTML,
+                      individualize: assignmentInfo.individualize,
+                      multipleAttempts: assignmentInfo.multipleAttempts,
+                      showSolution: assignmentInfo.showSolution,
+                      showFeedback: assignmentInfo.showFeedback,
+                      showHints: assignmentInfo.showHints,
+                      showCorrectness: assignmentInfo.showCorrectness,
+                      proctorMakesAvailable: assignmentInfo.proctorMakesAvailable,
+                    });
+                  }}>edit</button>
+                </div>
+                {editBox}
+              </React.Fragment>
+            );
+          }
         }
-      }
-    }else if (outlineType === "due"){
-      for (let [index,assignmentObj] of this.assignmentDueList.entries()){
-        if (assignmentObj.assignmentId === assignmentId){
-          this.assignmentIndex = index;
-          break;
+        let nextLevelHeadingIdArray = []; //break the association for recursion
+        for (let headingId of headingIdArray) {
+          nextLevelHeadingIdArray.push(headingId);
+        }
+        nextLevelHeadingIdArray.push(headingId);
+
+        this.courseOutlineList.push(
+          <div key={"OutlineHeadingButtons" + headingId} style={{ marginLeft: assignmentIndent + "px", marginBottom: "10px" }}>
+            <button onClick={() => this.insertHeading({ headingIdArray: nextLevelHeadingIdArray })}>Insert Heading</button><br />
+            <button onClick={() => this.addAssignments({ headingIdArray: nextLevelHeadingIdArray })}>Insert Assignments</button>
+          </div>
+        );
+        if (baseObj.headingsOrder !== undefined && baseObj.headingsOrder.length > 0) {
+
+          this.buildEditOutline({ courseId: courseId, headingIdArray: nextLevelHeadingIdArray })
         }
       }
     }
-
 
   }
 
-  creditUpdate({credit}){
+  saveAccessKeyIntoIndexDB(courseId,accessKey){
 
-    if (credit > this.assignmentObj.credit || !this.assignmentObj.credit){
-      this.assignmentObj.credit = credit;
+    var request = window.indexedDB.open("DoenetAccess");
+    request.onsuccess = (e) => {
+      let db = e.target.result;
+      var accessKeyObjectStore = db.transaction("accessKeys", "readwrite").objectStore("accessKeys");
+      let request = accessKeyObjectStore.get(courseId);
+      request.onsuccess = (e)=>{
+        let data = e.target.result;
+
+        if (data === undefined){
+          let requestAdd = accessKeyObjectStore.add({courseId,accessKey})
+          requestAdd.onsuccess = (e)=>{
+            this.setState({keyStorageStatus:"Access Key Saved!"});
+          }
+          requestAdd.onerror = (e)=>{
+            this.setState({keyStorageStatus:"Error!"})
+          }
+        }else{
+          data.accessKey = accessKey;
+          let requestUpdate = accessKeyObjectStore.put(data);
+          requestUpdate.onsuccess = (e)=>{
+            this.setState({keyStorageStatus:"Access Key Updated!"});
+          }
+          requestUpdate.onerror = (e)=>{
+            this.setState({keyStorageStatus:"Error!"})
+          }
+
+        }
+        
+      }
+      
     }
-    this.forceUpdate();
+    request.onupgradeneeded = (e) => {
+      let db = e.target.result;
+      db.createObjectStore("accessKeys", { keyPath: "courseId" });
+    }
   }
 
-  render() {
-    console.log("====RENDER====");
-    if (this.state.newChange===true){
-    this.ToggleList();
-    }
-    this.enableThese=[]
-    this.enabledDisabledArray = {
-      "overview":!!+this.state.overview,
-      "syllabus":!!+this.state.syllabus,
-      "grade":!!+this.state.grade,
-      "assignment":!!+this.state.assignment,
-    }
-    Object.keys(this.enabledDisabledArray).map(e=>{
-      if (this.enabledDisabledArray[e]===false){
-        this.enableThese.push(<option value={e}>{e}</option>)
+  storeAccessKeyLocally(){
+      const url = '/api/getAccessKey.php';
+      const data = {
+        courseId: this.state.courseId,
       }
-    });
-        this.TrueList = []
-    Object.keys(this.enabledDisabledArray).map(e=>{
-      if (this.enabledDisabledArray[e]===true){
-        this.TrueList.push(e)
-      }
-    });
-    let temp = false
-    this.TrueList.forEach(e=>{
-      if (e===this.activeSection && temp===false){
-        temp=true
+      const payload = {
+        params: data
       }
     });
     if ( this.DoneLoading===true && temp===false && this.activeSection!=null){
@@ -2195,12 +1887,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       
     </React.Fragment>);
 
-    let disablePrev = false;
-    if (this.assignmentIndex === 0){disablePrev = true;}
-    let disableNext = false;
-    if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
-  }
-}
 
 
 
