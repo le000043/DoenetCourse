@@ -33,6 +33,9 @@ class DoenetAdmin extends Component {
         .then(resp=>{
             this.username = resp.data.user;
             this.access = resp.data.access;
+            console.log("FROM ENV.PHP")
+            console.log(this.username)
+            console.log(resp.data)
             this.forceUpdate();
         });
      
@@ -1149,7 +1152,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       console.log("doenetML !")
       console.log(resp.data)
       this.updateNumber++;
-      this.doenetML=doenetML;
+      //this.doenetML=doenetML
+      this.doenetML=(doenetML?doenetML:"<p>Empty</p>");
       this.mainSection=(<DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
@@ -1167,21 +1171,20 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             this.forceUpdate();
     })
     .catch(error=>{this.setState({error:error})});
-  } 
-  // else {
-  //   if (assignmentId!=null) {
-  //     console.log(assignmentId)
-  //     // let contentId = this.assignment_obj[assignmentId]['contentId']
-  //   this.assignment_branchId = this.assignment_obj[assignmentId]
-    
-  //   // this.assignment_branchId = this.assignment_branchId ['contentId']
-
-  //     // console.log(contentId)
-  //     console.log(this.assignment_branchId.prototype.valueOf = function (){return name;})
-  //     // loadAssignmentContent({})
-  //   }
-  // }
-
+  } else {
+    this.mainSection=(<DoenetViewer 
+      key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+      free={{doenetCode: "<p>Empty</p>"}} 
+      mode={{
+        solutionType:this.state.solutionType,
+        allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
+        showHints:this.state.showHints,
+        showFeedback:this.state.showFeedback,
+        showCorrectness:this.state.showCorrectness,
+      }}           
+    />)
+  }
+  
 }
   ToggleList(){
     console.log("=====TOGGLE=====")
