@@ -580,175 +580,116 @@ buildTree(){
   }
   console.log("finish building tree")
 }
-saveTree(){
-  console.log("saving the tree")
-  /**
-   * here passing in a payload of
-   * for UPDATE:
-   *  a assignment set where all row in assignment match the id will be updated in parent
-   * for DELETE:
-   *  a header set where all row in course's heading match the id will be deleted
-   * for INSERT:
-   *  for inserting into assignment
-   *   a set of assignment id
-   *   a list of parent id as 1 header Id can have multiple assignment id
-   *   index of children id associated with index of assignment id
-   *  for inserting into heading
-   *    a list of header id where duplicate may occur as a header may contain several different children id
-   *    a set of children id as no children Id can be owned by 2 different parents
-   * 
-   * delete multiple rows: DELETE FROM table WHERE col1 IN (1,2,3,4,5)
-      insert multiple rows:
-      INSERT INTO 
-            projects(name, start_date, end_date)
-      VALUES
-            ('AI for Marketing','2019-08-01','2019-12-31'),
-            ('ML for Sales','2019-05-15','2019-11-20');
-   */
-  let assignmentId_parentID_array = [];
-  let assignmentId_array = Object.keys(this.assignment_obj)
-  assignmentId_array.forEach(id=>{
-    assignmentId_parentID_array.push(this.assignment_obj[id]['parent']);
-  })
-  let headerID_array = Object.keys(this.heading_obj);
-  let headerID_array_to_payload = []
-  let headerID_childrenId_array_to_payload=[]
-  let headerID_parentId_array_to_payload = []
-  let headerID_name = []
-  headerID_array.forEach(currentHeaderId=>{
-    let currentHeaderObj=this.heading_obj[currentHeaderId]
-    let name = currentHeaderObj['name']
-    if (name==null){
-      name="NULL"
-
-    }
-    let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
-    let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-    let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
-    let currentHeaderObjParentId = currentHeaderObj['parent']
-    let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
-    let iterator = 0
-    if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
-      headerID_array_to_payload.push(currentHeaderId)
-      if (currentHeaderObjParentId==null){
-        headerID_parentId_array_to_payload.push("NULL")
-      } else {
-      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
-      }
-      headerID_childrenId_array_to_payload.push("NULL")
-      headerID_name.push(name);
-    }
-    while (iterator < lengthOfHeadingId){
-      headerID_array_to_payload.push(currentHeaderId)
-      headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
-      headerID_name.push(name);
-      if (currentHeaderObjParentId==null){
-        headerID_parentId_array_to_payload.push("NULL")
-      } else {
-      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
-      }
-      iterator+=1
-    }
-    iterator = 0
-    while (iterator < lengthOfAssigmentId){
-      headerID_array_to_payload.push(currentHeaderId)
-      headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
-      headerID_name.push(name);
-      if (currentHeaderObjParentId==null){
-        headerID_parentId_array_to_payload.push("NULL")
-      } else {
-      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
-      }
-      iterator+=1
-    }
-  })
-
-    // const urlGetCode = '/api/saveTree.php';
-    // const data = {
-    //   assignmentId_array: assignmentId_array,
-    //   assignmentId_parentID_array: assignmentId_parentID_array,
-    //   headerID_array_to_payload:headerID_array_to_payload,
-    //   headerID_name:headerID_name,
-    //   headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
-    //   headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload
-
-    // }
-    let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
-    let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-    let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
-    let currentHeaderObjParentId = currentHeaderObj['parent']
-    let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
-    let iterator = 0
-    if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
-      headerID_array_to_payload.push(currentHeaderId)
-      if (currentHeaderObjParentId==null){
-        headerID_parentId_array_to_payload.push("NULL")
-      } else {
-      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
-      }
-      headerID_childrenId_array_to_payload.push("NULL")
-      headerID_name.push(name);
-    }
-    while (iterator < lengthOfHeadingId){
-      headerID_array_to_payload.push(currentHeaderId)
-      headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
-      headerID_name.push(name);
-      if (currentHeaderObjParentId==null){
-        headerID_parentId_array_to_payload.push("NULL")
-      } else {
-      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
-      }
-      iterator+=1
-    }
-    iterator = 0
-    while (iterator < lengthOfAssigmentId){
-      headerID_array_to_payload.push(currentHeaderId)
-      headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
-      headerID_name.push(name);
-      if (currentHeaderObjParentId==null){
-        headerID_parentId_array_to_payload.push("NULL")
-      } else {
-      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
-      }
-      iterator+=1
-    }
-  // })
-  //JSON.stringify()
-  // assignmentId_array =JSON.stringify(assignmentId_array) 
-  // assignmentId_parentID_array = JSON.stringify(assignmentId_parentID_array) 
-  // headerID_array_to_payload = JSON.stringify(headerID_array_to_payload) 
-  // headerID_childrenId_array_to_payload = JSON.stringify(headerID_childrenId_array_to_payload) 
-  // console.log(headerID_name)
-  //   console.log("headerID_array_to_payload..")
-  //   console.log(headerID_array_to_payload)
-  //   console.log("headerID_childrenId_array_to_payload..")
-  //   console.log(headerID_childrenId_array_to_payload)
-  //   console.log("headerID_parentId_array_to_payload")
-  //   console.log(headerID_parentId_array_to_payload)
-
-    const urlGetCode = '/api/saveTree.php';
-    const data = {
-      assignmentId_array: assignmentId_array,
-      assignmentId_parentID_array: assignmentId_parentID_array,
-      headerID_array_to_payload:headerID_array_to_payload,
-      headerID_name:headerID_name,
-      headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
-      headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
-      courseId:"aI8sK4vmEhC5sdeSP3vNW"
-    }
-
-    axios.post(urlGetCode,data)
-    .then(resp=>{
-      console.log(resp.data)
+  saveTree(){
+    console.log("saving the tree")
+    /**
+     * here passing in a payload of
+     * for UPDATE:
+     *  a assignment set where all row in assignment match the id will be updated in parent
+     * for DELETE:
+     *  a header set where all row in course's heading match the id will be deleted
+     * for INSERT:
+     *  for inserting into assignment
+     *   a set of assignment id
+     *   a list of parent id as 1 header Id can have multiple assignment id
+     *   index of children id associated with index of assignment id
+     *  for inserting into heading
+     *    a list of header id where duplicate may occur as a header may contain several different children id
+     *    a set of children id as no children Id can be owned by 2 different parents
+     * 
+     * delete multiple rows: DELETE FROM table WHERE col1 IN (1,2,3,4,5)
+        insert multiple rows:
+        INSERT INTO 
+              projects(name, start_date, end_date)
+        VALUES
+              ('AI for Marketing','2019-08-01','2019-12-31'),
+              ('ML for Sales','2019-05-15','2019-11-20');
+     */
+    let assignmentId_parentID_array = [];
+    let assignmentId_array = Object.keys(this.assignment_obj)
+    assignmentId_array.forEach(id=>{
+      assignmentId_parentID_array.push(this.assignment_obj[id]['parent']);
     })
-    .catch(error=>{this.setState({error:error})});
-
-    // axios.post(urlGetCode,data)
-    // .then(resp=>{
-    //   console.log(resp.data)
-    // })
-    // .catch(error=>{this.setState({error:error})});
-
+    let headerID_array = Object.keys(this.heading_obj);
+    let headerID_array_to_payload = []
+    let headerID_childrenId_array_to_payload=[]
+    let headerID_parentId_array_to_payload = []
+    let headerID_name = []
+    headerID_array.forEach(currentHeaderId=>{
+      let currentHeaderObj=this.heading_obj[currentHeaderId]
+      let name = currentHeaderObj['name']
+      if (name==null){
+        name="NULL"
+      }
+      let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
+      let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
+      let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
+      let currentHeaderObjParentId = currentHeaderObj['parent']
+      let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
+      let iterator = 0
+      if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
+        headerID_array_to_payload.push(currentHeaderId)
+        if (currentHeaderObjParentId==null){
+          headerID_parentId_array_to_payload.push("NULL")
+        } else {
+        headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        }
+        headerID_childrenId_array_to_payload.push("NULL")
+        headerID_name.push(name);
+      }
+      while (iterator < lengthOfHeadingId){
+        headerID_array_to_payload.push(currentHeaderId)
+        headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
+        headerID_name.push(name);
+        if (currentHeaderObjParentId==null){
+          headerID_parentId_array_to_payload.push("NULL")
+        } else {
+        headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        }
+        iterator+=1
+      }
+      iterator = 0
+      while (iterator < lengthOfAssigmentId){
+        headerID_array_to_payload.push(currentHeaderId)
+        headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
+        headerID_name.push(name);
+        if (currentHeaderObjParentId==null){
+          headerID_parentId_array_to_payload.push("NULL")
+        } else {
+        headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        }
+        iterator+=1
+      }
+    })
+    //JSON.stringify()
+    // assignmentId_array =JSON.stringify(assignmentId_array) 
+    // assignmentId_parentID_array = JSON.stringify(assignmentId_parentID_array) 
+    // headerID_array_to_payload = JSON.stringify(headerID_array_to_payload) 
+    // headerID_childrenId_array_to_payload = JSON.stringify(headerID_childrenId_array_to_payload) 
+    // console.log(headerID_name)
+    //   console.log("headerID_array_to_payload..")
+    //   console.log(headerID_array_to_payload)
+    //   console.log("headerID_childrenId_array_to_payload..")
+    //   console.log(headerID_childrenId_array_to_payload)
+    //   console.log("headerID_parentId_array_to_payload")
+    //   console.log(headerID_parentId_array_to_payload)
+      const urlGetCode = '/api/saveTree.php';
+      const data = {
+        assignmentId_array: assignmentId_array,
+        assignmentId_parentID_array: assignmentId_parentID_array,
+        headerID_array_to_payload:headerID_array_to_payload,
+        headerID_name:headerID_name,
+        headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
+        headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
+        courseId:"aI8sK4vmEhC5sdeSP3vNW"
+      }
+  
+      axios.post(urlGetCode,data)
+      .then(resp=>{
+        console.log(resp.data)
+      })
+      .catch(error=>{this.setState({error:error})});
+  
 }
 moveHeaderUp({headerObj}){
 /**
