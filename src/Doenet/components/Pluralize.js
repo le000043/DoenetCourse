@@ -4,8 +4,10 @@ import nlp from 'compromise';
 export default class Pluralize extends Text {
   static componentType = "pluralize";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.pluralform = {default: undefined};
     properties.basedonnumber = {default: undefined};
     return properties;

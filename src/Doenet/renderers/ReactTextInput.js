@@ -16,7 +16,7 @@ export default class ReactTextInput extends React.Component {
       this.valueAsSubmitted = false;
     }
 
-    this.localNumberTimesSubmitted = this.props.numberTimesSubmitted;
+    this.localNumberTimesSubmitted = this.props.numbertimessubmitted;
 
     this.delayToDisplayError = 2000;
     
@@ -31,11 +31,10 @@ export default class ReactTextInput extends React.Component {
   }
 
   updateValidationState() {
-
-    if(this.localNumberTimesSubmitted !== this.props.numberTimesSubmitted) {
+    if(this.localNumberTimesSubmitted !== this.props.numbertimessubmitted) {
       // if number of times submitted doesn't match,
       // it means that the answer has been submitted since last pass
-      this.localNumberTimesSubmitted = this.props.numberTimesSubmitted;
+      this.localNumberTimesSubmitted = this.props.numbertimessubmitted;
       this.lastSubmittedTextValue = this.props.free.sharedState.textValue;
       this.valueAsSubmitted = true;
     }else if(!this.props.valueHasBeenValidated) {
@@ -44,9 +43,9 @@ export default class ReactTextInput extends React.Component {
 
     this.validationState = "unvalidated";
     if (this.valueAsSubmitted) {
-      if (this.props.creditAchieved === 1) {
+      if (this.props.creditachieved === 1) {
         this.validationState = "correct";
-       } else if (this.props.creditAchieved === 0) {
+       } else if (this.props.creditachieved === 0) {
           this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -134,7 +133,7 @@ export default class ReactTextInput extends React.Component {
 
   onChangeHandler(e) {
     this.props.free.sharedState.textValue = e.target.value;
-    if(this.props.valueHasBeenValidated && this.props.numberTimesSubmitted > 0 && this.lastSubmittedTextValue === this.props.free.sharedState.textValue) {
+    if(this.props.valueHasBeenValidated && this.props.numbertimessubmitted > 0 && this.lastSubmittedTextValue === this.props.free.sharedState.textValue) {
       if(!this.valueAsSubmitted) {
         // since changed the value back to the value that was last submitted, need to
         // 1. call action to let core know this input is back to submitted value
@@ -234,7 +233,7 @@ export default class ReactTextInput extends React.Component {
         } else if(this.validationState === "partialcorrect"){
           //partial credit
         
-          let percent = Math.round(this.props.creditAchieved * 100);
+          let percent = Math.round(this.props.creditachieved * 100);
           let partialCreditContents = `${percent} %`;
           checkWorkStyle.width = "50px";
         
@@ -352,7 +351,6 @@ export default class ReactTextInput extends React.Component {
           key={inputKey}
           id={inputKey}
           value={this.props.free.sharedState.textValue}
-          disabled={this.props.disabled}
           onChange={this.onChangeHandler}
           onKeyPress={this.handleKeyPress}
           onKeyDown={this.handleKeyDown}

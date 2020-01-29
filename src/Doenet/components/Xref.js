@@ -31,16 +31,22 @@ export default class Xref extends InlineComponent {
     }
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({ standardComponentTypes }) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.texttype = { default: "type-global" };
 
     return properties;
   }
 
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let exactlyOneRefTarget = childLogic.newLeaf({
       name: 'exactlyOneRefTarget',

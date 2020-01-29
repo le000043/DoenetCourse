@@ -789,6 +789,11 @@ class DoenetCourse extends Component {
       this.assignmentIsClicked=false;
 
 
+      this.enableOverview=false
+      this.enableSyllabus=false
+      this.enableGrade=false
+      this.enableAssignment=false
+
 
 
     
@@ -811,8 +816,7 @@ class DoenetCourse extends Component {
           // this.payLoad.grade=+(resp.data["grade"])
           // this.payLoad.syllabus=+(resp.data["syllabus"])
           // this.payLoad.assignment=+(resp.data["assignment"])
-          this.overview_branchId=resp.data["overview_branchId"]
-          this.syllabus_branchId=resp.data["syllabus_branchId"]
+
           // assignment_state =+(resp.data["assignment"])
           // this.enabledDisabledArray = {
           //   overview:!!+payLoad.overview,
@@ -820,39 +824,45 @@ class DoenetCourse extends Component {
           //   grade:!!+payLoad.syllabus,
           //   assignment:!!+payLoad.assignment,
           // }
-          
-          // this.state.overview=+(resp.data["overview"])
-          // this.state.grade=+(resp.data["grade"])
-          // this.state.syllabus=+(resp.data["syllabus"])
-          // this.state.assignment=+(resp.data["assignment"])
-          this.state.overview=+(resp.data["overview"])
-          if (this.state.overview){
+
+          console.log("RESP DATA")
+          console.log(resp.data)
+          // this.enableOverview=+(resp.data["overview"])
+          // this.enableGrade=+(resp.data["grade"])
+          // this.enableSyllabus=+(resp.data["syllabus"])
+          // this.enableAssignment=+(resp.data["assignment"])
+          this.enableOverview=+(resp.data["overview"])
+          if (this.enableOverview){
             this.trueList.push("overview")
+            this.overview_branchId=resp.data["overview_branchId"]
+
           }
-          this.state.syllabus=+(resp.data["syllabus"])
-          if (this.state.syllabus){
+          this.enableSyllabus=+(resp.data["syllabus"])
+          if (this.enableSyllabus){
             this.trueList.push("syllabus")
+            this.syllabus_branchId=resp.data["syllabus_branchId"]
           }
-          this.state.grade=+(resp.data["grade"])
-          if (this.state.grade){
+          this.enableGrade=+(resp.data["grade"])
+          if (this.enableGrade){
             this.trueList.push("grade")
           }
-          this.state.assignment=+(resp.data["assignment"])
-          if (this.state.assignment){
+          this.enableAssignment=+(resp.data["assignment"])
+          if (this.enableAssignment){
             this.trueList.push("assignments")
           }
-          if (this.state.overview){
+          
+          if (this.enableOverview){
             this.overview_link = (<Link to={'/overview'} className="homeMainMenuItem" data-cy="overviewNavItem" onClick={()=>{this.activeSection="overview";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "overview" ? "* " : null}Overview4</Link>)
           }
-          if (this.state.syllabus){
+          if (this.enableSyllabus){
             this.syllabus_link = (<Link to={'/syllabus'} className="homeMainMenuItem" data-cy="syllabusNavItem"onClick={()=>{this.activeSection="syllabus";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "syllabus" ? "* " : null}Syllabus2</Link>
             )
           }
-          if (this.state.grade){
+          if (this.enableGrade){
             this.grade_link = (<Link to={'/grades'} className="homeMainMenuItem" data-cy="gradesNavItem"onClick={()=>{this.activeSection="grades";this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "grades" ? "* " : null}Grades</Link>
             )
           }
-          if (this.state.assignment){
+          if (this.enableAssignment){
             this.assignment_link = (<Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{this.assignmentIsClicked=true;this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link>
             )
           }
@@ -893,14 +903,16 @@ class DoenetCourse extends Component {
             this.LoadAssignmentFromTheBeginning({location:location})
           }
           console.log("==END OF COURSE CONSTRUCTOR==")
-          console.log(this.activeSection)
-          console.log(this.state.overview)
-          console.log(this.state.syllabus)
-          console.log(this.state.grade)
-          console.log(this.state.assignment)
+
+          // console.log(this.activeSection)
+          // console.log(this.enableOverview)
+          // console.log(this.enableSyllabus)
+          // console.log(this.enableGrade)
+          // console.log(this.enableAssignment)
 
 
           this.loadSection()
+          this.forceUpdate()
         });
          
     this.courseInfo = {};
@@ -1883,8 +1895,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
-    console.log(this.overview_link)
-    console.log(this.syllabus_link)
+
     // console.log(this.tree_route)
     // console.log(this.assignmentTree)
     // console.log(this.assignmentTree)
@@ -1901,7 +1912,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               {this.overview_link}
               {this.syllabus_link}
               {this.grade_link}
-              {this.state.assignment?this.assignment_link:null}
+
+              {this.assignment_link}
+              {/* {this.enableAssignment?this.assignment_link:null} */}
               {/* <Link to={'/overview'} className="homeMainMenuItem" data-cy="overviewNavItem" onClick={()=>{this.activeSection="overview";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "overview" ? "* " : null}Overview4</Link> */}
               {/* <Link to={'/syllabus'} className="homeMainMenuItem" data-cy="syllabusNavItem"onClick={()=>{this.activeSection="syllabus";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "syllabus" ? "* " : null}Syllabus2</Link> */}
               {/* <Link to={'/grades'} className="homeMainMenuItem" data-cy="gradesNavItem"onClick={()=>{this.activeSection="grade";this.componentLoadedFromNavigationBar=null;this.loadSection()}}>{this.activeSection === "grades" ? "* " : null}Grades</Link> */}
@@ -1944,8 +1957,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           {overview_component}
           {syllabus_component}
           {grade_component}
-          {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
-          {this.state.assignment?tree_component:null}
+
+          {this.enableAssignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
+          {this.enableAssignment?tree_component:null}
+
           
         <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
           <option>Enable Section</option>

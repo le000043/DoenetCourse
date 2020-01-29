@@ -47,16 +47,22 @@ export default class DiscreteInfiniteSet extends MathComponent {
 
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.minindex = {default: me.fromAst(['-', Infinity])};
     properties.maxindex = {default: me.fromAst(Infinity)};
     return properties;
   }
 
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.deleteAllLogic();
 

@@ -3,8 +3,12 @@ import BooleanComponent from '../Boolean';
 export default class BooleanOperator extends BooleanComponent {
   static componentType = "_booleanoperator";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
     
     childLogic.deleteAllLogic();
 

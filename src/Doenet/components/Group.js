@@ -4,8 +4,12 @@ import {postProcessRef, processChangesForReplacements} from './Ref';
 export default class Group extends CompositeComponent {
   static componentType = "group";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: 'anything',
@@ -18,29 +22,47 @@ export default class Group extends CompositeComponent {
     return childLogic;
   }
 
+  updateState(args={}) {
+    let trackChanges = this.currentTracker.trackChanges;
 
+    super.updateState(args);
 
-  static returnStateVariableDefinitions() {
+    // child logic always satisfied
 
-    let stateVariableDefinitions = {};
+    let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
-      returnDependencies: () => ({}),
-      definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
-      },
-    };
+    
+    if(childrenChanged) {
+      for(let childName in this.allChildren) {
+        let child = this.allChildren[childName].component;
+        if(!child.componentIsAProperty) {
+          // add dependencies once without recursive to set as base reference
+          this.addReferenceDependencies({
+            target: child,
+            shadowed: true
+          });
+          // run second time recursive to get descendants
+          this.addReferenceDependencies({
+            target: child,
+            recursive: true,
+            shadowed: true
+          });
+        }
+      }
+    }
 
-    return stateVariableDefinitions;
+    if(args.init) {
+      this.serializedReplacements = this.createSerializedReplacements();
+    }
   }
 
-  static createSerializedReplacements({component}) {
+  createSerializedReplacements() {
 
-    let serializedChildrenCopy = component.activeChildren.map(
+    let serializedChildrenCopy = this.activeChildren.map(
       x => x.serialize({forReference: true})
     );
 
-    if(component.stateValues.hide) {
+    if(this.state.hide) {
       for(let child of serializedChildrenCopy) {
         if(child.state === undefined) {
           child.state = {};
@@ -49,21 +71,18 @@ export default class Group extends CompositeComponent {
       }
     }
 
-    return {replacements: postProcessRef({serializedComponents: serializedChildrenCopy, componentName: component.componentName}) };
+    return postProcessRef({serializedComponents: serializedChildrenCopy, componentName: this.componentName});
 
   }
 
-  static calculateReplacementChanges({component, componentChanges, components}) {
-
-    return [];
-
+  calculateReplacementChanges(componentChanges) {
     let replacementChanges = processChangesForReplacements({
       componentChanges: componentChanges,
-      componentName: component.componentName,
-      downstreamDependencies: component.downstreamDependencies,
-      components
+      componentName: this.componentName,
+      downstreamDependencies: this.downstreamDependencies,
+      components: this.components
     })
-    // console.log(`replacementChanges for group ${component.componentName}`);
+    // console.log(`replacementChanges for group ${this.componentName}`);
     // console.log(replacementChanges);
     return replacementChanges;
   }

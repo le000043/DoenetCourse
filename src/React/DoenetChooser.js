@@ -221,48 +221,38 @@ class DoenetChooser extends Component {
     }
   }
 
-  handleNewCourseCreated({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) {
+  handleNewCourseCreated({courseId, courseName, courseCode, term, description, department, section}) {
     // create new documents for overview and syllabus, get branchIds
     let overviewId = nanoid();
     let overviewDocumentName = courseName + " Overview";
+    this.saveContentToServer({
+      documentName:overviewDocumentName,
+      code:"",
+      branchId:overviewId,
+      publish:true
+    });
 
     let syllabusId = nanoid();
     let syllabusDocumentName = courseName + " Syllabus";    
-    
-    Promise.all([
-      this.saveContentToServer({
-        documentName:overviewDocumentName,
-        code:"",
-        branchId:overviewId,
-        publish:true
-      }),
-      this.saveContentToServer({
-        documentName:syllabusDocumentName,
-        code:"",
-        branchId:syllabusId,
-        publish:true
-      }),
-      this.saveCourse({
-        courseName: courseName,
-        courseId: courseId,
-        courseCode: courseCode,
-        term: term,
-        description: description,
-        department: department,
-        section: section,
-        overviewId: overviewId,
-        syllabusId: syllabusId
-      }),
-      this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"]),
-      this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert")
-    ])
-    .then(() => {
-      this.loadAllCourses(() => {
-        this.selectDrive("Courses", courseId);
-        this.forceUpdate();
-      })
-      callback();
-    })
+    this.saveContentToServer({
+      documentName:syllabusDocumentName,
+      code:"",
+      branchId:syllabusId,
+      publish:true
+    });
+    this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"]);
+    this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert");
+    this.saveCourse({
+      courseName: courseName,
+      courseId: courseId,
+      courseCode: courseCode,
+      term: term,
+      description: description,
+      department: department,
+      section: section,
+      overviewId: overviewId,
+      syllabusId: syllabusId
+    });
   }
 
   loadUserContentBranches(callback=(()=>{})) {
@@ -408,19 +398,18 @@ class DoenetChooser extends Component {
   }
 
   selectDrive(drive, courseId=null) {
-    if (drive === "Courses") {      
+    if (drive === "Courses") {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        selectedCourse: courseId,
+        directoryStack: []});
       this.folders_loaded = false;
       this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
-      this.loadCourseContent(courseId, () => {
-        this.setState({
-          selectedItems: [],
-          selectedItemsType: [],
-          activeSection: "chooser",
-          selectedDrive: drive,
-          selectedCourse: courseId,
-          directoryStack: []});
-      });
+      this.loadCourseContent(courseId);
     } else {
       this.setState({
         selectedItems: [],
@@ -803,8 +792,6 @@ class CourseForm extends React.Component {
         description: this.state.description,
         department: this.state.department,
         section: this.state.section,
-        }, () => {
-          event.preventDefault();
         });
     } else {
       this.props.saveCourse({
@@ -819,6 +806,8 @@ class CourseForm extends React.Component {
         syllabusId: this.props.selectedCourseInfo.syllabusId
       });
     }
+    event.preventDefault();        
+    this.props.handleBack();
   }
 
   handleBack() {

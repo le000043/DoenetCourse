@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import axios from 'axios';
 axios.defaults.withCredentials = true;
 import DoenetHeader from './DoenetHeader';
@@ -17,7 +17,7 @@ import "../imports/table.css";
 import "../imports/doenet.css";
 
 function sortArraysByElementI(arrarr, i) {
-    // TODO: finish
+    TODO: finish
     arrarr.sort()
 }
 
@@ -26,7 +26,7 @@ function sortArraysByElementI(arrarr, i) {
 class GradebookOverview extends Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
             overviewLoaded: false,
         }
@@ -78,7 +78,7 @@ class GradebookOverview extends Component {
             if (this.assignmentsLoaded) {
                 this.getOverviewData();
             }
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
 
         axios.get("/api/loadAssignments.php?courseId=" + this.courseId).then(resp => {
             let data = resp.data
@@ -101,7 +101,7 @@ class GradebookOverview extends Component {
             if (this.studentsLoaded) {
                 this.getOverviewData();
             }
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
     }
 
     getOverviewData() {
@@ -131,8 +131,7 @@ class GradebookOverview extends Component {
             }
 
             for (let user_assignment in data) {
-                let [assignmentId,
-                    assignmentName,
+                let [assignmentId,,
                     credit,
                     username] = data[user_assignment]
 
@@ -140,9 +139,9 @@ class GradebookOverview extends Component {
             }
 
             this.setState({ overviewLoaded: true })
-        }).catch(err => console.log(err));
+        }).catch(err => alert((err.response).toString()));
     }
-
+    
     get assignmentsTable() {
         if (this._assignmentsTable !== null) {
             return this._assignmentsTable;
@@ -152,7 +151,7 @@ class GradebookOverview extends Component {
 
         this._assignmentsTable.headers = []; // th elements in the all assignments table
         for (let i in this.assignments) {
-            let { assignmentId, assignmentName } = this.assignments[i];
+            let {assignmentId, assignmentName} = this.assignments[i];
             this._assignmentsTable.headers.push(
                 <th key={"headerCell_" + assignmentId} className="assignments-table-header">
                     <Link to={`/assignment/?assignmentId=${assignmentId}`}>{assignmentName}</Link>
@@ -167,7 +166,7 @@ class GradebookOverview extends Component {
                 credit = this.students[username].courseCredit,
                 generatedGrade = this.students[username].courseGrade,
                 overrideGrade = this.students[username].overrideCourseGrade;
-            let grade = overrideGrade ? overrideGrade : generatedGrade
+            let grade = overrideGrade?overrideGrade:generatedGrade
 
             this._assignmentsTable.rows.push(
                 <tr key={"studentRow_" + username}>
@@ -176,7 +175,7 @@ class GradebookOverview extends Component {
                         let arr = [];
 
                         for (let i in this.assignments) {
-                            let { assignmentId, assignmentName } = this.assignments[i]
+                            let {assignmentId, assignmentName} = this.assignments[i]
                             arr.push(<td key={"studentAssignmentGrade_" + username + "_" + assignmentId}>
                                 {
                                     (this.overviewData[username].assignments[assignmentId]) * 100 + "%" // guaranteed to be initialized, if initialized to null, then this will result in "0%"
@@ -197,7 +196,7 @@ class GradebookOverview extends Component {
         return this._assignmentsTable
     }
 
-
+    
     render() {
         if (!this.state.overviewLoaded) {
             return (<div>
@@ -228,7 +227,7 @@ class GradebookOverview extends Component {
 class GradebookAssignmentView extends Component {
     constructor(props) {
         super(props)
-
+        
         this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
 
         this.state = {
@@ -272,7 +271,7 @@ class GradebookAssignmentView extends Component {
             if (this.assignmentsLoaded) {
                 this.getAssignmentData();
             }
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
 
         axios.get("/api/loadAssignments.php?courseId=" + this.courseId).then(resp => {
             let data = resp.data
@@ -296,7 +295,7 @@ class GradebookAssignmentView extends Component {
             if (this.studentsLoaded) {
                 this.getAssignmentData();
             }
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
     }
 
     componentDidUpdate() {
@@ -341,7 +340,7 @@ class GradebookAssignmentView extends Component {
             console.log(this.assignmentData)
 
             this.setState({ assignmentLoaded: true });
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
     }
 
     get attemptsTable() {
@@ -486,7 +485,7 @@ class GradebookAttemptView extends Component {
             if (this.assignmentsLoaded) {
                 this.getDML();
             }
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
 
         axios.get("/api/loadAssignments.php?courseId=" + this.courseId).then(resp => {
             let data = resp.data
@@ -510,7 +509,7 @@ class GradebookAttemptView extends Component {
             if (this.studentsLoaded) {
                 this.getDML();
             }
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -531,7 +530,7 @@ class GradebookAttemptView extends Component {
             this.dml = data[0]; // this endpoint can only return an array with one element or an error code
 
             this.setState({ attemptLoaded: true });
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
     }
 
     render() {
@@ -572,7 +571,7 @@ class GradebookAttemptView extends Component {
 export default class DoenetGradebook extends Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
             error: null,
             errorInfo: null,
@@ -580,7 +579,7 @@ export default class DoenetGradebook extends Component {
         };
 
         this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
-
+    
         this.assignments = null;
         this._navItems = null;
     }
@@ -603,11 +602,11 @@ export default class DoenetGradebook extends Component {
             }
 
             this.setState({ assignmentsLoaded: true });
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => alert((err.response).toString()));
     }
 
     componentDidCatch(error, info) {
-        this.setState({ error, errorInfo: info });
+        this.setState({error, errorInfo: info });
     }
 
     get navItems() {
@@ -625,7 +624,7 @@ export default class DoenetGradebook extends Component {
 
         return this._navItems;
     }
-
+    
     render() {
         if (this.state.error !== null) {
             return (<div>

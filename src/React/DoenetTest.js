@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
-import doenetDefaultCode from '../defaultCode.doenet';
+// import doenetDefaultCode from '../defaultCode.doenet';
 import { Button, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 class DoenetTest extends Component {
@@ -132,7 +132,6 @@ class DoenetTest extends Component {
     
             <DoenetViewer 
             key={"doenetviewer"+this.updateNumber} 
-            // collaborate={true}
             free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 
             mode={{
               solutionType:this.state.solutionType,

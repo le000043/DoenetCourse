@@ -53,7 +53,7 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 30; ind++) {
-        let num = components['/sample' + ind].replacements[0].stateValues.value;
+        let num = components['/sample' + ind].replacements[0].state.number;
         expect([1,2,3,4,5,6,7,8,9,10].includes(num)).eq(true);
       }
     })
@@ -105,7 +105,7 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 30; ind++) {
-        let num = components['/sample' + ind].replacements[0].stateValues.value;
+        let num = components['/sample' + ind].replacements[0].state.number;
         expect([1,2,3,4,5,6].includes(num)).eq(true);
       }
     })
@@ -157,7 +157,7 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 30; ind++) {
-        let num = components['/sample' + ind].replacements[0].stateValues.value;
+        let num = components['/sample' + ind].replacements[0].state.number;
         expect([-3,-2,-1,0,1,2,3,4,5].includes(num)).eq(true);
       }
     })
@@ -209,7 +209,7 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 30; ind++) {
-        let num = components['/sample' + ind].replacements[0].stateValues.value;
+        let num = components['/sample' + ind].replacements[0].state.number;
         expect([-3,-2,-1,1,2,3,4,5].includes(num)).eq(true);
       }
     })
@@ -261,7 +261,7 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 30; ind++) {
-        let num = components['/sample' + ind].replacements[0].stateValues.value;
+        let num = components['/sample' + ind].replacements[0].state.number;
         expect([-3,-1,1,3,5].includes(num)).eq(true);
       }
     })
@@ -313,7 +313,7 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 30; ind++) {
-        let letter = components['/sample' + ind].replacements[0].stateValues.value;
+        let letter = components['/sample' + ind].replacements[0].state.value;
         expect(['c','d','e','f','g','h'].includes(letter)).eq(true);
       }
     })
@@ -355,8 +355,8 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 20; ind++) {
-        let num1 = components['/sample' + ind].replacements[0].stateValues.value;
-        let num2 = components['/sample' + ind].replacements[1].stateValues.value;
+        let num1 = components['/sample' + ind].replacements[0].state.number;
+        let num2 = components['/sample' + ind].replacements[1].state.number;
         expect([-4,-2,2,4].includes(num1)).eq(true);
         expect([-4,-2,2,4].includes(num2)).eq(true);
         expect(num1).not.eq(num2);
@@ -397,8 +397,8 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 20; ind++) {
-        let num1 = components['/sample' + ind].replacements[0].stateValues.value;
-        let num2 = components['/sample' + ind].replacements[1].stateValues.value;
+        let num1 = components['/sample' + ind].replacements[0].state.number;
+        let num2 = components['/sample' + ind].replacements[1].state.number;
         
         expect(allowedCombinations.some(v => v[0]===num1 && v[1]===num2)).eq(true);
       }
@@ -441,11 +441,11 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 20; ind++) {
-        let num1 = components['/sample' + ind].replacements[0].stateValues.value;
-        let num2 = components['/sample' + ind].replacements[1].stateValues.value;
-        let num3 = components['/sample' + ind].replacements[2].stateValues.value;
-        let num4 = components['/sample' + ind].replacements[3].stateValues.value;
-        let num5 = components['/sample' + ind].replacements[4].stateValues.value;
+        let num1 = components['/sample' + ind].replacements[0].state.number;
+        let num2 = components['/sample' + ind].replacements[1].state.number;
+        let num3 = components['/sample' + ind].replacements[2].state.number;
+        let num4 = components['/sample' + ind].replacements[3].state.number;
+        let num5 = components['/sample' + ind].replacements[4].state.number;
         expect([-4,-2,2,4].includes(num1)).eq(true);
         expect([-4,-2,2,4].includes(num2)).eq(true);
         expect([-4,-2,2,4].includes(num3)).eq(true);
@@ -482,8 +482,8 @@ describe('SelectFromSequence Tag Tests',function() {
     </aslist>
     <ref name="n2">n3</ref>
     <ref name="n">num1</ref>
-    <math name="num1"><ref>n2</ref>+<ref>num2</ref>+2</math>
-    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
+    <number name="num1"><ref>n2</ref>+<ref>num2</ref>+2</number>
+    <number name="num2"><ref>n3</ref>+<ref>num3</ref></number>
     <ref name="n3">num3</ref>
     <number name="num3">1</number>
     `},"*");
@@ -498,11 +498,11 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 20; ind++) {
-        let num1 = components['/sample' + ind].replacements[0].stateValues.value;
-        let num2 = components['/sample' + ind].replacements[1].stateValues.value;
-        let num3 = components['/sample' + ind].replacements[2].stateValues.value;
-        let num4 = components['/sample' + ind].replacements[3].stateValues.value;
-        let num5 = components['/sample' + ind].replacements[4].stateValues.value;
+        let num1 = components['/sample' + ind].replacements[0].state.number;
+        let num2 = components['/sample' + ind].replacements[1].state.number;
+        let num3 = components['/sample' + ind].replacements[2].state.number;
+        let num4 = components['/sample' + ind].replacements[3].state.number;
+        let num5 = components['/sample' + ind].replacements[4].state.number;
         expect([-4,-2,2,4].includes(num1)).eq(true);
         expect([-4,-2,2,4].includes(num2)).eq(true);
         expect([-4,-2,2,4].includes(num3)).eq(true);
@@ -543,24 +543,24 @@ describe('SelectFromSequence Tag Tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let num1 = components['/sample1'].replacements[0].stateValues.value;
-      let num2 = components['/sample2'].replacements[0].stateValues.value;
+      let num1 = components['/sample1'].replacements[0].state.number;
+      let num2 = components['/sample2'].replacements[0].state.number;
       expect(Number.isInteger(num1) && num1>=1 && num1 <=100).eq(true);
       expect(Number.isInteger(num2) && num2>=1 && num2 <=100).eq(true);
-      expect(components['/noresample1'].replacements[0].replacements[0].stateValues.value).eq(num1);
-      expect(components['/noresample2'].replacements[0].replacements[0].stateValues.value).eq(num2);
-      expect(components['/noreresample1'].replacements[0].replacements[0].replacements[0].stateValues.value).eq(num1);
-      expect(components['/noreresample2'].replacements[0].replacements[0].replacements[0].stateValues.value).eq(num2);
+      expect(components['/noresample1'].replacements[0].state.number).eq(num1);
+      expect(components['/noresample2'].replacements[0].state.number).eq(num2);
+      expect(components['/noreresample1'].replacements[0].state.number).eq(num1);
+      expect(components['/noreresample2'].replacements[0].state.number).eq(num2);
 
-      expect(components['/noresamplelist'].replacements[0].activeChildren[0].stateValues.value).eq(num1);
-      expect(components['/noresamplelist'].replacements[0].activeChildren[1].stateValues.value).eq(num2);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[0].stateValues.value).eq(num1);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[1].stateValues.value).eq(num2);
+      expect(components['/noresamplelist'].replacements[0].activeChildren[0].state.number).eq(num1);
+      expect(components['/noresamplelist'].replacements[0].activeChildren[1].state.number).eq(num2);
+      expect(components['/noreresamplelist'].replacements[0].activeChildren[0].state.number).eq(num1);
+      expect(components['/noreresamplelist'].replacements[0].activeChildren[1].state.number).eq(num2);
 
-      expect(components['/noresamplep'].replacements[0].activeChildren[0].activeChildren[0].stateValues.value).eq(num1);
-      expect(components['/noresamplep'].replacements[0].activeChildren[0].activeChildren[1].stateValues.value).eq(num2);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[0].activeChildren[0].stateValues.value).eq(num1);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[0].activeChildren[1].stateValues.value).eq(num2);
+      expect(components['/noresamplep'].replacements[0].activeChildren[0].activeChildren[0].state.number).eq(num1);
+      expect(components['/noresamplep'].replacements[0].activeChildren[0].activeChildren[1].state.number).eq(num2);
+      expect(components['/noreresamplep'].replacements[0].activeChildren[0].activeChildren[0].state.number).eq(num1);
+      expect(components['/noreresamplep'].replacements[0].activeChildren[0].activeChildren[1].state.number).eq(num2);
 
     })
   });
@@ -601,8 +601,8 @@ describe('SelectFromSequence Tag Tests',function() {
       let sample2replacements = components['/sample2'].replacements;
       expect(sample1replacements.length).eq(5);
       expect(sample2replacements.length).eq(2);
-      sample1numbers = sample1replacements.map(x => x.stateValues.value);
-      sample2numbers = sample2replacements.map(x => x.stateValues.value);
+      sample1numbers = sample1replacements.map(x => x.state.number);
+      sample2numbers = sample2replacements.map(x => x.state.number);
 
       for(let num of sample1numbers) {
         expect([1,2,3].includes(num)).eq(true);
@@ -624,8 +624,8 @@ describe('SelectFromSequence Tag Tests',function() {
       let sample1replacements = components['/sample1'].replacements;
       let sample2replacements = components['/sample2'].replacements;
  
-      expect(sample1replacements.map(x => x.stateValues.value)).eqls(sample1numbers)
-      expect(sample2replacements.map(x => x.stateValues.value)).eqls(sample2numbers)
+      expect(sample1replacements.map(x => x.state.number)).eqls(sample1numbers)
+      expect(sample2replacements.map(x => x.state.number)).eqls(sample2numbers)
 
 
     })
@@ -633,7 +633,7 @@ describe('SelectFromSequence Tag Tests',function() {
 
   it("select doesn't resample in dynamic map",() => {
     cy.window().then((win) => { win.postMessage({doenetCode: `
-    <text>a</text>
+    <math>1</math>
     How many numbers do you want? <mathinput />
     <p name="p1"><aslist>
     <map assignnamespaces="a,b,c,d,e,f">
@@ -662,7 +662,9 @@ describe('SelectFromSequence Tag Tests',function() {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
 
     let samplednumbers=[];
 
@@ -675,16 +677,16 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("sample one number");
     cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
+      let n1 = components['/a/n'].state.number;
       samplednumbers.push(n1);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
@@ -692,19 +694,19 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       for(let ind=0; ind<1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
       }
     })
 
@@ -718,16 +720,16 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get same number back");
     cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
+      let n1 = components['/a/n'].state.number;
       expect(n1).eq(samplednumbers[0]);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
@@ -735,20 +737,20 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
 
       for(let ind=0; ind<1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
       }
     })
 
@@ -756,9 +758,9 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.get('#\\/_mathinput1_input').clear().type(`3{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
-      let n3 = components['/c/n'].stateValues.value;
+      let n1 = components['/a/n'].state.number;
+      let n2 = components['/b/n'].state.number;
+      let n3 = components['/c/n'].state.number;
       expect(n1).eq(samplednumbers[0]);
       samplednumbers.push(n2);
       samplednumbers.push(n3);
@@ -768,19 +770,19 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       for(let ind=0; ind<3; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
      }
     })
 
@@ -794,9 +796,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
 
@@ -804,8 +806,8 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
+      let n1 = components['/a/n'].state.number;
+      let n2 = components['/b/n'].state.number;
       expect(n1).eq(samplednumbers[0]);
       expect(n2).eq(samplednumbers[1]);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(2);
@@ -814,20 +816,20 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
 
       for(let ind=0; ind<2; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
       }
     })
 
@@ -835,12 +837,12 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
-      let n3 = components['/c/n'].stateValues.value;
-      let n4 = components['/d/n'].stateValues.value;
-      let n5 = components['/e/n'].stateValues.value;
-      let n6 = components['/f/n'].stateValues.value;
+      let n1 = components['/a/n'].state.number;
+      let n2 = components['/b/n'].state.number;
+      let n3 = components['/c/n'].state.number;
+      let n4 = components['/d/n'].state.number;
+      let n5 = components['/e/n'].state.number;
+      let n6 = components['/f/n'].state.number;
       expect(n1).eq(samplednumbers[0]);
       expect(n2).eq(samplednumbers[1]);
       expect(n3).eq(samplednumbers[2]);
@@ -853,19 +855,19 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for(let ind=0; ind<6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
       }
     })
 
@@ -879,21 +881,21 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get all six back");
     cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
-      let n3 = components['/c/n'].stateValues.value;
-      let n4 = components['/d/n'].stateValues.value;
-      let n5 = components['/e/n'].stateValues.value;
-      let n6 = components['/f/n'].stateValues.value;
+      let n1 = components['/a/n'].state.number;
+      let n2 = components['/b/n'].state.number;
+      let n3 = components['/c/n'].state.number;
+      let n4 = components['/d/n'].state.number;
+      let n5 = components['/e/n'].state.number;
+      let n6 = components['/f/n'].state.number;
       expect(n1).eq(samplednumbers[0]);
       expect(n2).eq(samplednumbers[1]);
       expect(n3).eq(samplednumbers[2]);
@@ -906,19 +908,19 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for(let ind=0; ind<6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.number).eq(samplednumbers[ind]);
       }
     })
 
@@ -953,21 +955,21 @@ describe('SelectFromSequence Tag Tests',function() {
 
       let u=components['/u'];
       let u2=components['/u2'].replacements[0];
-      let comparisons = options.map(el => el.equals(u.stateValues.value));
+      let comparisons = options.map(el => el.equals(u.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(u.stateValues.value.tree).eqls(u2.stateValues.value.tree);
+      expect(u.state.value.tree).eqls(u2.state.value.tree);
 
       let v=components['/v'];
       let v2=components['/v2'].replacements[0];
-      comparisons = options.map(el => el.equals(v.stateValues.value));
+      comparisons = options.map(el => el.equals(v.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(v.stateValues.value.tree).eqls(v2.stateValues.value.tree);
+      expect(v.state.value.tree).eqls(v2.state.value.tree);
 
       let w=components['/w'];
       let w2=components['/w2'].replacements[0];
-      comparisons = options.map(el => el.equals(w.stateValues.value));
+      comparisons = options.map(el => el.equals(w.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(w.stateValues.value.tree).eqls(w2.stateValues.value.tree);
+      expect(w.state.value.tree).eqls(w2.state.value.tree);
 
     })
 
@@ -1001,26 +1003,26 @@ describe('SelectFromSequence Tag Tests',function() {
 
       let u=components['/u'];
       let u2=components['/u2'].replacements[0];
-      let comparisons = options.map(el => el.equals(u.stateValues.value));
+      let comparisons = options.map(el => el.equals(u.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(u.stateValues.value.tree).eqls(u2.stateValues.value.tree);
+      expect(u.state.value.tree).eqls(u2.state.value.tree);
 
       let v=components['/v'];
       let v2=components['/v2'].replacements[0];
-      comparisons = options.map(el => el.equals(v.stateValues.value));
+      comparisons = options.map(el => el.equals(v.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(v.stateValues.value.tree).eqls(v2.stateValues.value.tree);
+      expect(v.state.value.tree).eqls(v2.state.value.tree);
 
       let w=components['/w'];
       let w2=components['/w2'].replacements[0];
-      comparisons = options.map(el => el.equals(w.stateValues.value));
+      comparisons = options.map(el => el.equals(w.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(w.stateValues.value.tree).eqls(w2.stateValues.value.tree);
+      expect(w.state.value.tree).eqls(w2.state.value.tree);
 
       let s = components['/s'];
       for(let ind=3; ind < 6; ind++) {
         let r = s.replacements[0];
-        comparisons = options.map(el => el.equals(r.stateValues.value));
+        comparisons = options.map(el => el.equals(r.state.value));
         expect(comparisons.includes(true)).eq(true);
       }
     })
@@ -1055,26 +1057,26 @@ describe('SelectFromSequence Tag Tests',function() {
 
       let u=components['/s/u'];
       let u2=components['/u2'].replacements[0];
-      let comparisons = options.map(el => el.equals(u.stateValues.value));
+      let comparisons = options.map(el => el.equals(u.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(u.stateValues.value.tree).eqls(u2.stateValues.value.tree);
+      expect(u.state.value.tree).eqls(u2.state.value.tree);
 
       let v=components['/s/v'];
       let v2=components['/v2'].replacements[0];
-      comparisons = options.map(el => el.equals(v.stateValues.value));
+      comparisons = options.map(el => el.equals(v.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(v.stateValues.value.tree).eqls(v2.stateValues.value.tree);
+      expect(v.state.value.tree).eqls(v2.state.value.tree);
 
       let w=components['/s/w'];
       let w2=components['/w2'].replacements[0];
-      comparisons = options.map(el => el.equals(w.stateValues.value));
+      comparisons = options.map(el => el.equals(w.state.value));
       expect(comparisons.includes(true)).eq(true);
-      expect(w.stateValues.value.tree).eqls(w2.stateValues.value.tree);
+      expect(w.state.value.tree).eqls(w2.state.value.tree);
 
       let s = components['/s'];
       for(let ind=3; ind < 6; ind++) {
         let r = s.replacements[0];
-        comparisons = options.map(el => el.equals(r.stateValues.value));
+        comparisons = options.map(el => el.equals(r.state.value));
         expect(comparisons.includes(true)).eq(true);
       }
     })
@@ -1104,8 +1106,8 @@ describe('SelectFromSequence Tag Tests',function() {
   <p> 
     <ref name="n2">n3</ref>
     <ref name="n">num1</ref>
-    <math name="num1" simplify><ref>n2</ref>+<ref>num2</ref></math>
-    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
+    <number name="num1"><ref>n2</ref>+<ref>num2</ref></number>
+    <number name="num2"><ref>n3</ref>+<ref>num3</ref></number>
     <ref name="n3">num3</ref>
     <number name="num3">1</number>
   </p>  
@@ -1119,12 +1121,12 @@ describe('SelectFromSequence Tag Tests',function() {
  
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      let x1 = components['/x1'].stateValues.value;
-      let y1 = components['/y1'].stateValues.value;
-      let z1 = components['/z1'].stateValues.value;
-      let x2 = components['/x2'].stateValues.value;
-      let y2 = components['/y2'].stateValues.value;
-      let z2 = components['/z2'].stateValues.value;
+      let x1 = components['/x1'].state.value.tree;
+      let y1 = components['/y1'].state.value.tree;
+      let z1 = components['/z1'].state.value.tree;
+      let x2 = components['/x2'].state.value.tree;
+      let y2 = components['/y2'].state.value.tree;
+      let z2 = components['/z2'].state.value.tree;
 
       expect(Number.isInteger(x1) && x1>=1 && x1 <= 5).eq(true);
       expect(Number.isInteger(y1) && y1>=1 && y1 <= 5).eq(true);
@@ -1133,12 +1135,12 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(Number.isInteger(y2) && y2>=6 && y2 <= 10).eq(true);
       expect(Number.isInteger(z2) && z2>=6 && z2 <= 10).eq(true);
 
-      let x1a = components['/x1a'].replacements[0].stateValues.value;
-      let y1a = components['/y1a'].replacements[0].stateValues.value;
-      let z1a = components['/z1a'].replacements[0].stateValues.value;
-      let x2a = components['/x2a'].replacements[0].stateValues.value;
-      let y2a = components['/y2a'].replacements[0].stateValues.value;
-      let z2a = components['/z2a'].replacements[0].stateValues.value;
+      let x1a = components['/x1a'].replacements[0].state.value.tree;
+      let y1a = components['/y1a'].replacements[0].state.value.tree;
+      let z1a = components['/z1a'].replacements[0].state.value.tree;
+      let x2a = components['/x2a'].replacements[0].state.value.tree;
+      let y2a = components['/y2a'].replacements[0].state.value.tree;
+      let z2a = components['/z2a'].replacements[0].state.value.tree;
 
       expect(x1a).eq(x1);
       expect(y1a).eq(y1);
@@ -1169,8 +1171,8 @@ describe('SelectFromSequence Tag Tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let c = components['/c'].stateValues.value;
-      let d = components['/d'].stateValues.value;
+      let c = components['/c'].state.value;
+      let d = components['/d'].state.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
@@ -1213,8 +1215,8 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 20; ind++) {
-        let x1 = components['/sample' + ind].replacements[0].stateValues.value;
-        let x2 = components['/sample' + ind].replacements[1].stateValues.value;
+        let x1 = components['/sample' + ind].replacements[0].state.value;
+        let x2 = components['/sample' + ind].replacements[1].state.value;
         
         expect(allowedCombinations.some(v => v[0].equals(x1) && v[1].equals(x2))).eq(true);
       }
@@ -1254,8 +1256,8 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       for(let ind=1; ind <= 20; ind++) {
-        let x1 = components['/sample' + ind].replacements[0].stateValues.value;
-        let x2 = components['/sample' + ind].replacements[1].stateValues.value;
+        let x1 = components['/sample' + ind].replacements[0].state.value;
+        let x2 = components['/sample' + ind].replacements[1].state.value;
         
         expect(allowedCombinations.some(v => v[0] === x1 && v[1] === x2)).eq(true);
       }
@@ -1284,11 +1286,11 @@ describe('SelectFromSequence Tag Tests',function() {
       let secondnumbers = components['/_ref1'].replacements[0].activeChildren;
       let thirdnumbers = components['/_ref2'].replacements[0].activeChildren[0].activeChildren;
       for(let i=0; i<20; i++) {
-        let newnumber = originalnumbers[i].stateValues.value;
+        let newnumber = originalnumbers[i].state.number;
         expect(newnumber).gte(lastnumber);
         lastnumber = newnumber;
-        expect(secondnumbers[i].stateValues.value).eq(newnumber);
-        expect(thirdnumbers[i].stateValues.value).eq(newnumber);
+        expect(secondnumbers[i].state.number).eq(newnumber);
+        expect(thirdnumbers[i].state.number).eq(newnumber);
       }
     });
 
@@ -1316,12 +1318,12 @@ describe('SelectFromSequence Tag Tests',function() {
       let secondletters = components['/_ref1'].replacements[0].activeChildren;
       let thirdletters = components['/_ref2'].replacements[0].activeChildren[0].activeChildren;
       for(let i=0; i<20; i++) {
-        let newletter = originalletters[i].stateValues.value;
+        let newletter = originalletters[i].state.value;
         expect(newletter.length).gte(lastletter.length);
         expect(newletter.length > lastletter.length || newletter >= lastletter).to.be.true;
         lastletter = newletter;
-        expect(secondletters[i].stateValues.value).eq(newletter);
-        expect(thirdletters[i].stateValues.value).eq(newletter);
+        expect(secondletters[i].state.value).eq(newletter);
+        expect(thirdletters[i].state.value).eq(newletter);
       }
     });
 

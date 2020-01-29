@@ -35,38 +35,18 @@ class PanelRender extends BaseRenderer {
 
 
     if (this.breakpoints.length === 0) {
-      //columns not defined
-    let panelStyle = {
+      let panelStyle = {};
+      panelStyle[`.container${this._key}`] = {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
       }
-      return <React.Fragment>
-        {/* <div style={panelStyle}  >
-        <div style={{backgroundColor: "orange",width:"300px"}}>one</div>
-      <div style={{backgroundColor: "green",width:"300px"}}>two</div>
-      <div style={{backgroundColor: "blue",width:"300px"}}>three</div>
-        </div> */}
-        <span style={panelStyle}  _key={this._key} >{childDoenetTags}</span>
-
-        {/* <span className={`container${this._key}`} _key={this._key} >{childDoenetTags}</span> */}
-      </React.Fragment>
-
-      // let panelStyle = {};
-      // panelStyle[`.container${this._key}`] = {
-      //   display: 'flex',
-      //   flexDirection: 'row',
-      //   flexWrap: 'wrap',
-      // }
       //columns not defined
-      // return <React.Fragment>
-      //   <a name={this._key} />
-      //   <Style rules={panelStyle} />
-      //   <div>one</div>
-      // <div>two</div>
-      // <div>three</div>
-      //   {/* <span className={`container${this._key}`} _key={this._key} >{childDoenetTags}</span> */}
-      // </React.Fragment>
+      return <React.Fragment>
+        <a name={this._key} />
+        <Style rules={panelStyle} />
+        <span className={`container${this._key}`} _key={this._key} >{childDoenetTags}</span>
+      </React.Fragment>
     }
 
     let mediaQueries = {}

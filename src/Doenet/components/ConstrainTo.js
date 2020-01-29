@@ -3,8 +3,12 @@ import ConstraintComponent from './abstract/ConstraintComponent';
 export default class ConstrainTo extends ConstraintComponent {
   static componentType = "constrainto";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: "atLeastOneGraphical",

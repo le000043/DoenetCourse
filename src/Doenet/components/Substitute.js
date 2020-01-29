@@ -78,8 +78,10 @@ export default class Substitute extends CompositeComponent {
   }
 
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createPropertiesObject({standardComponentTypes}) {
+    let properties = super.createPropertiesObject({
+      standardComponentTypes: standardComponentTypes
+    });
     properties.type = {default: undefined};
 
     // properties for math
@@ -95,8 +97,13 @@ export default class Substitute extends CompositeComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
+
 
     let breakStringIntoChildren = function({activeChildrenMatched, sharedParameters}) {
       // know it a string
@@ -200,6 +207,7 @@ export default class Substitute extends CompositeComponent {
     if(!this.childLogicSatisfied) {
       this.unresolvedState.originalValue = true;
       this.unresolvedState.value = true;
+      this.serializedReplacements = [];
       return;
     }
 
@@ -214,6 +222,7 @@ export default class Substitute extends CompositeComponent {
     if(!this.state.patternParent.childLogicSatisfied) {
       this.unresolvedState.originalValue = true;
       this.unresolvedState.value = true;
+      this.serializedReplacements = [];
       return;
     }
 
@@ -240,6 +249,7 @@ export default class Substitute extends CompositeComponent {
         console.warn("Substitute must have a math, text or string pattern.")
         this.unresolvedState.value = true;
         this.state.patternClass = "invalid";
+        this.serializedReplacements = [];
         return
       }
     }
@@ -296,6 +306,7 @@ export default class Substitute extends CompositeComponent {
       !x.childLogicSatisfied || x.activeChildren.some(y => y.unresolvedState.value)
     )) {
       this.unresolvedState.value = true;
+      this.serializedReplacements = [];
       return;
     }
     
@@ -395,6 +406,10 @@ export default class Substitute extends CompositeComponent {
 
     }
 
+    if(args.init) {
+      this.serializedReplacements = this.createSerializedReplacements();
+    }
+
   }
 
   parseMathString(inputString) {
@@ -419,39 +434,35 @@ export default class Substitute extends CompositeComponent {
 
   }
 
-  static createSerializedReplacements({component}) {
-
-    if(Object.keys(component.unresolvedState).length > 0) {
-      return {replacements: []};
-    }
+  createSerializedReplacements() {
 
     let serializedReplacement = {
-      componentType: component.state.type,
-      state: {value: component.state.value}
+      componentType: this.state.type,
+      state: {value: this.state.value}
     }
 
     // for math type, if specified properties in the substitute tag
     // give those properties to serialized replacement
-    if(component.state.type === "math") {
+    if(this.state.type === "math") {
       for(let item of ["simplify", "displaydigits", "rendermode"]) {
-        if(!component._state[item].usedDefault) {
-          serializedReplacement.state[item] = component.state.item
+        if(!this._state[item].usedDefault) {
+          serializedReplacement.state[item] = this.state.item
         }
       }
     }
 
-    return {replacements: [serializedReplacement]};
+    return [serializedReplacement];
   }
 
 
-  static calculateReplacementChanges({component}) {
+  calculateReplacementChanges(componentChanges) {
 
     let replacementChanges = [];
 
     // if changed type, recreate
-    if(component.state.type !== component.replacements[0].componentType) {
+    if(this.state.type !== this.replacements[0].componentType) {
 
-      let newSerializedReplacements = this.createSerializedReplacements({component}).replacements;
+      let newSerializedReplacements = this.createSerializedReplacements();
       let replacementInstruction = {
         changeType: "add",
         changeTopLevelReplacements: true,
@@ -464,18 +475,18 @@ export default class Substitute extends CompositeComponent {
     } else {
       // if didn't change type, just change state variable(s)
 
-      let stateChanges = {value: component.state.value};
+      let stateChanges = {value: this.state.value};
 
-      if(component.state.type === "math") {
+      if(this.state.type === "math") {
         for(let item of ["simplify", "displaydigits", "rendermode"]) {
-          if(!component._state[item].usedDefault) {
-            stateChanges[item] = component.state.item;
+          if(!this._state[item].usedDefault) {
+            stateChanges[item] = this.state.item;
           }
         }
       }
       let replacementInstruction = {
         changeType: "updateStateVariables",
-        component: component.replacements[0],
+        component: this.replacements[0],
         stateChanges: stateChanges
       }
 

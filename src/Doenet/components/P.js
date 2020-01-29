@@ -3,8 +3,12 @@ import BlockComponent from './abstract/BlockComponent';
 export default class P extends BlockComponent {
   static componentType = "p";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     childLogic.newLeaf({
       name: "atLeastZeroInline",
@@ -17,36 +21,16 @@ export default class P extends BlockComponent {
     return childLogic;
   }
 
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = {};
-
-    stateVariableDefinitions.childrenWhoRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "atLeastZeroInline"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
-    }
-
-    return stateVariableDefinitions;
-    
-  }
-
   initializeRenderer(){
     if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.p({
         key: this.componentName,
       });
     }
+  }
+
+  updateChildrenWhoRender(){
+    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
   static includeBlankStringChildren = true;

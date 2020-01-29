@@ -5,8 +5,12 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+    let childLogic = super.returnChildLogic({
+      standardComponentTypes: standardComponentTypes,
+      allComponentClasses: allComponentClasses,
+      components: components,
+    });
 
     let atLeastZeroStrings = childLogic.newLeaf({
       name: "atLeastZeroStrings",
@@ -29,103 +33,153 @@ export default class Text extends InlineComponent {
       requireConsecutive: true,
       setAsBase: true
     });
-
+    
     return childLogic;
   }
 
-  static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+  updateState(args={}) {
+    if(args.init === true) {
 
-    stateVariableDefinitions.value = {
-      public: true,
-      componentType: this.componentType,
-      // deferCalculation: false,
-      returnDependencies: () => ({
-        stringTextChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "stringsAndTexts",
-          variableNames: ["value"],
-        },
-      }),
-      defaultValue: "",
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringTextChildren.length === 0) {
-          return {
-            useEssentialOrDefaultValue: {
-              value: { variablesToCheck: "value" }
-            }
-          }
-        }
-        let value = "";
-        for (let comp of dependencyValues.stringTextChildren) {
-          value += comp.stateValues.value;
-        }
-        return { newValues: { value } };
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-        let numChildren = dependencyValues.stringTextChildren.length;
-        if (numChildren > 1) {
-          return { success: false };
-        }
-        if (numChildren === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "stringTextChildren",
-              desiredValue: desiredStateVariableValues.value,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-          };
-        }
-        // no children, so value is essential and give it the desired value
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "value",
-            value: desiredStateVariableValues.value
-          }]
-        };
-      }
+      // make default reference (with no prop) be value
+      this.stateVariablesForReference = ["value"];
+
+      this.makePublicStateVariable({
+        variableName: "value",
+        componentType: this.componentType
+      });
     }
 
-    return stateVariableDefinitions;
+    super.updateState(args);
 
-  }
-
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
-
-  returnSerializeInstructions() {
-    let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
-      this.childLogic.returnMatches("atLeastZeroTexts").length === 0;
-    if (skipChildren) {
-      let stateVariables = ["value"];
-      return { skipChildren, stateVariables };
-    }
-    return {};
-  }
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
+    if(!this.childLogicSatisfied) {
+      this.unresolvedState.value = true;
       return;
     }
 
+    let trackChanges = this.currentTracker.trackChanges;
+    let childrenChanged = trackChanges.childrenChanged(this.componentName);
+
+    if(childrenChanged) {
+      delete this.unresolvedState.value;
+
+      let stringsAndTexts = this.childLogic.returnMatches("stringsAndTexts");
+
+      // if stringsAndTexts is undefined, then a superclass
+      // must have overwritten childLogic, so skip this processing
+      if(stringsAndTexts === undefined) {
+        this.state.textChildLogicOverwritten = true;
+        return;
+      }
+
+      if(stringsAndTexts.length > 0) {
+        this.state.stringTextChildren = stringsAndTexts.map(x => this.activeChildren[x]);
+      }else {
+        delete this.state.stringTextChildren;
+      }
+    }
+
+    if(this.state.textChildLogicOverwritten) {
+      return;
+    }
+
+    if(this.state.stringTextChildren !== undefined) {
+      this.state.value = "";
+      delete this.unresolvedState.value;
+      for(let child of this.state.stringTextChildren) {
+        if(child.unresolvedState.value) {
+          this.unresolvedState.value = true;
+          break;
+        }
+        this.state.value += child.state.value;
+      }
+    }else {
+
+      if(this._state.value.essential !== true) {
+        // if no string/text activeChildren and value wasn't set from state directly,
+        // make value be blank and set it to be essential so any changes will be saved
+        this.state.value = "";
+        this._state.value.essential = true;
+      }
+
+    }
+
+    if(childrenChanged) {
+      this.state.modifiablefromabove = this.determineModifiableFromAbove();
+    }
+
+  }
+
+  determineModifiableFromAbove() {
+
+    if(this.state.modifybyreference !== true) {
+      return false;
+    }
+
+    // if have 1 or fewer string or text child,
+    // then can potentially set that child (or essential state variable)
+    // to any specified string
+    if(!this.state.stringTextChildren || this.state.stringTextChildren.length === 1) {
+      return true;
+    }else {
+      return false;
+    }
+  }
+
+  initializeRenderer({}){
+    if(this.renderer !== undefined) {
+      this.updateRenderer();
+      return;
+    }
+    
     this.renderer = new this.availableRenderers.text({
       key: this.componentName,
-      text: this.stateValues.value,
+      text: this.state.value,
     });
   }
 
   updateRenderer() {
-    this.renderer.updateText(this.stateValues.value);
+    this.renderer.updateText(this.state.value);
   }
 
+  allowDownstreamUpdates() {
+    return this.state.modifiablefromabove;
+  }
+
+  get variablesUpdatableDownstream() {
+    return ["value"];
+  }
+
+  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
+    dependenciesToUpdate}) {
+
+    let newStateVariables = {};
+
+    if("value" in stateVariablesToUpdate) {
+      newStateVariables.value = {changes: stateVariablesToUpdate.value.changes};
+    }
+
+    if(this.state.stringTextChildren && this.state.stringTextChildren.length === 1) {
+      let childName = this.state.stringTextChildren[0].componentName;
+      dependenciesToUpdate[childName] = {value: newStateVariables.value};
+    }
+
+    let shadowedResult = this.updateShadowSources({
+      newStateVariables: newStateVariables,
+      dependenciesToUpdate: dependenciesToUpdate,
+    });
+    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
+    let isReplacement = shadowedResult.isReplacement;
+
+    // add value to stateVariableChangesToSave if value is essential
+    // and no shadow sources were updated with value
+    if(this._state.value.essential === true &&
+        !shadowedStateVariables.has("value") && !isReplacement) {
+      stateVariableChangesToSave.value = newStateVariables.value;
+    }
+
+    return true;
+
+  }
 
 }
