@@ -217,6 +217,7 @@ class DoenetAdmin extends Component {
           //   assignment:!!+payLoad.assignment,
           // }
 
+
           this.setState({overview:+(resp.data["overview"])})
           this.setState({syllabus:+(resp.data["syllabus"])})
           this.setState({grade:+(resp.data["grade"])})
@@ -229,6 +230,7 @@ class DoenetAdmin extends Component {
           // if (!this.assignment_state_1){
           //   this.state.assignment=false;
           // }
+
           // let foundit=false
           Object.keys(this.payLoad).map((e)=>{
                 console.log("looping payload here")
@@ -618,6 +620,69 @@ saveTree(){
     let name = currentHeaderObj['name']
     if (name==null){
       name="NULL"
+
+    }
+    let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
+    let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
+    let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
+    let currentHeaderObjParentId = currentHeaderObj['parent']
+    let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
+    let iterator = 0
+    if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
+      headerID_array_to_payload.push(currentHeaderId)
+      if (currentHeaderObjParentId==null){
+        headerID_parentId_array_to_payload.push("NULL")
+      } else {
+      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+      }
+      headerID_childrenId_array_to_payload.push("NULL")
+      headerID_name.push(name);
+    }
+    while (iterator < lengthOfHeadingId){
+      headerID_array_to_payload.push(currentHeaderId)
+      headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
+      headerID_name.push(name);
+      if (currentHeaderObjParentId==null){
+        headerID_parentId_array_to_payload.push("NULL")
+      } else {
+      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+      }
+      iterator+=1
+    }
+    iterator = 0
+    while (iterator < lengthOfAssigmentId){
+      headerID_array_to_payload.push(currentHeaderId)
+      headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
+      headerID_name.push(name);
+      if (currentHeaderObjParentId==null){
+        headerID_parentId_array_to_payload.push("NULL")
+      } else {
+      headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+      }
+      iterator+=1
+    }
+  })
+  //JSON.stringify()
+  // assignmentId_array =JSON.stringify(assignmentId_array) 
+  // assignmentId_parentID_array = JSON.stringify(assignmentId_parentID_array) 
+  // headerID_array_to_payload = JSON.stringify(headerID_array_to_payload) 
+  // headerID_childrenId_array_to_payload = JSON.stringify(headerID_childrenId_array_to_payload) 
+  // console.log(headerID_name)
+  //   console.log("headerID_array_to_payload..")
+  //   console.log(headerID_array_to_payload)
+  //   console.log("headerID_childrenId_array_to_payload..")
+  //   console.log(headerID_childrenId_array_to_payload)
+  //   console.log("headerID_parentId_array_to_payload")
+  //   console.log(headerID_parentId_array_to_payload)
+    const urlGetCode = '/api/saveTree.php';
+    const data = {
+      assignmentId_array: assignmentId_array,
+      assignmentId_parentID_array: assignmentId_parentID_array,
+      headerID_array_to_payload:headerID_array_to_payload,
+      headerID_name:headerID_name,
+      headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
+      headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload
+
     }
     let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
     let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
@@ -681,6 +746,12 @@ saveTree(){
       headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
       courseId:"aI8sK4vmEhC5sdeSP3vNW"
     }
+
+    axios.post(urlGetCode,data)
+    .then(resp=>{
+      console.log(resp.data)
+    })
+    .catch(error=>{this.setState({error:error})});
 
     axios.post(urlGetCode,data)
     .then(resp=>{
@@ -2023,14 +2094,11 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
 
   render() {
-    console.log("====MAINRENDER====");
+
+    console.log("====RENDER====");
     if (this.state.newChange===true){
     this.ToggleList();
     }
-    console.log(this.state.overview)
-    console.log(this.state.syllabus)
-    console.log(this.state.grade)
-    console.log(this.state.assignment)
 
     this.enableThese=[]
     this.enabledDisabledArray = {

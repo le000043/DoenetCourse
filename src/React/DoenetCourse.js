@@ -788,10 +788,12 @@ class DoenetCourse extends Component {
       this.assignment_link=null;
       this.assignmentIsClicked=false;
 
+
       this.enableOverview=false
       this.enableSyllabus=false
       this.enableGrade=false
       this.enableAssignment=false
+
 
 
     
@@ -814,6 +816,7 @@ class DoenetCourse extends Component {
           // this.payLoad.grade=+(resp.data["grade"])
           // this.payLoad.syllabus=+(resp.data["syllabus"])
           // this.payLoad.assignment=+(resp.data["assignment"])
+
           // assignment_state =+(resp.data["assignment"])
           // this.enabledDisabledArray = {
           //   overview:!!+payLoad.overview,
@@ -821,6 +824,7 @@ class DoenetCourse extends Component {
           //   grade:!!+payLoad.syllabus,
           //   assignment:!!+payLoad.assignment,
           // }
+
           console.log("RESP DATA")
           console.log(resp.data)
           // this.enableOverview=+(resp.data["overview"])
@@ -899,6 +903,7 @@ class DoenetCourse extends Component {
             this.LoadAssignmentFromTheBeginning({location:location})
           }
           console.log("==END OF COURSE CONSTRUCTOR==")
+
           // console.log(this.activeSection)
           // console.log(this.enableOverview)
           // console.log(this.enableSyllabus)
@@ -1890,15 +1895,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
-    console.log(this.enableOverview)
-    console.log(this.enableSyllabus)
-    console.log(this.enableGrade)
-    console.log(this.enableAssignment)
-
-    console.log(this.overview_link)
-    console.log(this.syllabus_link)
-    console.log(this.grade_link)
-    console.log(this.assignment_link)
 
     // console.log(this.tree_route)
     // console.log(this.assignmentTree)
@@ -1916,6 +1912,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               {this.overview_link}
               {this.syllabus_link}
               {this.grade_link}
+
               {this.assignment_link}
               {/* {this.enableAssignment?this.assignment_link:null} */}
               {/* <Link to={'/overview'} className="homeMainMenuItem" data-cy="overviewNavItem" onClick={()=>{this.activeSection="overview";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "overview" ? "* " : null}Overview4</Link> */}
@@ -1960,8 +1957,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           {overview_component}
           {syllabus_component}
           {grade_component}
+
           {this.enableAssignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
           {this.enableAssignment?tree_component:null}
+
           
         <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
           <option>Enable Section</option>
