@@ -662,28 +662,17 @@ saveTree(){
       iterator+=1
     }
   })
-  //JSON.stringify()
-  // assignmentId_array =JSON.stringify(assignmentId_array) 
-  // assignmentId_parentID_array = JSON.stringify(assignmentId_parentID_array) 
-  // headerID_array_to_payload = JSON.stringify(headerID_array_to_payload) 
-  // headerID_childrenId_array_to_payload = JSON.stringify(headerID_childrenId_array_to_payload) 
-  // console.log(headerID_name)
-  //   console.log("headerID_array_to_payload..")
-  //   console.log(headerID_array_to_payload)
-  //   console.log("headerID_childrenId_array_to_payload..")
-  //   console.log(headerID_childrenId_array_to_payload)
-  //   console.log("headerID_parentId_array_to_payload")
-  //   console.log(headerID_parentId_array_to_payload)
-    const urlGetCode = '/api/saveTree.php';
-    const data = {
-      assignmentId_array: assignmentId_array,
-      assignmentId_parentID_array: assignmentId_parentID_array,
-      headerID_array_to_payload:headerID_array_to_payload,
-      headerID_name:headerID_name,
-      headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
-      headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload
 
-    }
+    // const urlGetCode = '/api/saveTree.php';
+    // const data = {
+    //   assignmentId_array: assignmentId_array,
+    //   assignmentId_parentID_array: assignmentId_parentID_array,
+    //   headerID_array_to_payload:headerID_array_to_payload,
+    //   headerID_name:headerID_name,
+    //   headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
+    //   headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload
+
+    // }
     let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
     let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
     let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
@@ -723,7 +712,7 @@ saveTree(){
       }
       iterator+=1
     }
-  })
+  // })
   //JSON.stringify()
   // assignmentId_array =JSON.stringify(assignmentId_array) 
   // assignmentId_parentID_array = JSON.stringify(assignmentId_parentID_array) 
@@ -736,6 +725,7 @@ saveTree(){
   //   console.log(headerID_childrenId_array_to_payload)
   //   console.log("headerID_parentId_array_to_payload")
   //   console.log(headerID_parentId_array_to_payload)
+
     const urlGetCode = '/api/saveTree.php';
     const data = {
       assignmentId_array: assignmentId_array,
@@ -753,11 +743,11 @@ saveTree(){
     })
     .catch(error=>{this.setState({error:error})});
 
-    axios.post(urlGetCode,data)
-    .then(resp=>{
-      console.log(resp.data)
-    })
-    .catch(error=>{this.setState({error:error})});
+    // axios.post(urlGetCode,data)
+    // .then(resp=>{
+    //   console.log(resp.data)
+    // })
+    // .catch(error=>{this.setState({error:error})});
 
 }
 moveHeaderUp({headerObj}){
@@ -1165,12 +1155,12 @@ axiosDeleteAssignmentFromDB ({listOfAssignment}) {
   // })
     // here write axios called to delete one selected assignment
   let list = listOfAssignment
-  const urlGetCode = '/api/deleteAssignment.php';
+  const urlGetCode1 = '/api/deleteAssignment.php';
   const data = {
     list : list
   }
 
-  axios.post(urlGetCode,data)
+  axios.post(urlGetCode1,data)
   .then(resp=>{
     console.log(resp.data)
     this.buildTreeArray();
@@ -1213,7 +1203,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.numberOfAttemptsAllowed = this.assignment_obj[assignmentId]['numberOfAttemptsAllowed']
 
     console.log("exists both")
-    const urlGetCode = '/api/getDoenetML.php';
+    const urlGetCode2 = '/api/getDoenetML.php';
     const data = {
       branchId:branchId,
       contentId:contentId
@@ -1223,7 +1213,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     const payload = {
       params: data
     }
-    axios.get(urlGetCode,payload)
+    axios.get(urlGetCode2,payload)
     .then(resp=>{
       let doenetML = resp.data.doenetML;
       console.log("doenetML !")
