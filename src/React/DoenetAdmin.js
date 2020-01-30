@@ -33,9 +33,10 @@ class DoenetAdmin extends Component {
         .then(resp=>{
             this.username = resp.data.user;
             this.access = resp.data.access;
-            console.log("FROM ENV.PHP")
-            console.log(this.username)
+            this.adminAccess=resp.data.adminAccess;
+            console.log("from ENV")
             console.log(resp.data)
+            console.log(this.adminAccess)
             this.forceUpdate();
         });
      
@@ -2025,8 +2026,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
 
   render() {
-
     console.log("====RENDER====");
+    console.log(this.adminAccess)
     if (this.state.newChange===true){
     this.ToggleList();
     }
@@ -2173,40 +2174,46 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span>
       </div>)
     }
-
-  
-    return (<React.Fragment>
-      <div className="courseContainer">
-        
-        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
-        <div className="homeLeftNav">
-          {overview_component}
-          {syllabus_component}
-          {grade_component}
-          {/* {assignment_component} */}
-          {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
-          {this.state.assignment?tree_component:null}
+    if (this.adminAccess!=0){
+      return (<React.Fragment>
+        <div className="courseContainer">
           
-        <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
-          <option>Enable Section</option>
-          {this.enableThese }
-        </select>
+          <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
+          <div className="homeLeftNav">
+            {overview_component}
+            {syllabus_component}
+            {grade_component}
+            {/* {assignment_component} */}
+            {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
+            {this.state.assignment?tree_component:null}
+            
+          <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
+            <option>Enable Section</option>
+            {this.enableThese }
+          </select>
+          </div>
+          <div className="homeActiveSection">
+            {this.mainSection}
+            {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
+          </div>
+          <div className="info">
+          <span className="Section-Icon-Box">         
+          <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
+            <p>Assignment Name: {this.assignmentName?this.assignmentName:"not yet assigned"}</p>
+            <p>Due Date: {this.dueDate?this.dueDate:"not yet assigned"}</p>
+            <p>assigned Date: {this.assignedDate?this.assignedDate:"not yet assigned"}</p>
+            <p>number Of Attempts Allowed: {this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:"not yet assigned"}</p>
+          </div>
         </div>
-        <div className="homeActiveSection">
-          {this.mainSection}
-          {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
-        </div>
-        <div className="info">
-        <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
-          <p>Assignment Name: {this.assignmentName?this.assignmentName:"not yet assigned"}</p>
-          <p>Due Date: {this.dueDate?this.dueDate:"not yet assigned"}</p>
-          <p>assigned Date: {this.assignedDate?this.assignedDate:"not yet assigned"}</p>
-          <p>number Of Attempts Allowed: {this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:"not yet assigned"}</p>
-        </div>
-      </div>
-      
-    </React.Fragment>);
+        
+      </React.Fragment>);
+    } else {
+      return (<React.Fragment>
+        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
+        <div>PERMISSION DENIED</div>
+      </React.Fragment>)
+    }
+    
 
     let disablePrev = false;
     if (this.assignmentIndex === 0){disablePrev = true;}
