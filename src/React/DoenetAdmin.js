@@ -2101,7 +2101,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
     let ModifyTreeInsertAssignmentHeadingModeComponent=
     (<div>
-      <div className={assignment_class} onClick={()=>{
+      <div className={assignment_class} data-cy="assignmentsNavItem" onClick={()=>{
       this.activeSection = "assignment";
       this.updateLocationBar({});
       this.forceUpdate()
