@@ -33,37 +33,34 @@ body{
   }
   .homeActiveSection{
     /* background-color: rgb(243, 0, 0); */
-    display:grid;
-
+    /* display:grid;
     grid-row: 2/3 ;
-
     grid-column: 2 ;
-
-
     grid-template-columns: auto 520px;
+    padding: 5px;
+    margin: 0;
+    overflow: scroll; */
+
     /* grid-template-rows: 60px auto; */
     /* width: 100vw; */
     /* height: 100vh; */
-    padding: 5px;
-    margin: 0;
-    overflow: scroll;
-
+    
     /* grid-column: 2 / 3;
     grid-row: 2 / 3;
     padding: 5px;
     overflow: scroll; */
   }
   .homeActiveSectionMain{
-    grid-column: 1 / 2;
+    /* grid-column: 1 / 2;
     grid-row: 1 / 2;
     padding: 5px;
-    overflow: scroll;
+    overflow: scroll; */
   }
   .homeActiveSectionMainTree{
-    grid-column: 1 / 2;
+    /* grid-column: 1 / 2;
     grid-row: 1 / 2;
     padding: 5px;
-    overflow: auto;
+    overflow: auto; */
   }
 
 
@@ -76,19 +73,12 @@ body{
     overflow: scroll;
   } */
 
-  .info {
-    /* grid-column: 3 / 4; */
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    padding: 5px;
-    overflow: scroll;
-  }
-  
+
   .homeMainMenuItem{
-      display: flex;
+      /* display: flex;
     padding: 5px;
     border-bottom: 1px solid rgb(110, 110, 110);
-    cursor: pointer;
+    cursor: pointer; */
   }
   .homeMainMenuItem:hover{
     background-color: rgb(173, 173, 173);

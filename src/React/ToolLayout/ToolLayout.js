@@ -431,7 +431,7 @@ export default function ToolLayout(props) {
 
   return (
       <>
-        <DoenetHeader  toolTitle="Example"/>
+        {/* <DoenetHeader  toolTitle="Example"/> */}
         { deviceType === "phone" ? <div ref={ container }>
         <div style={{ position: "fixed", top: "120px" }}>
           <div style={{ height: "90vh", display: "flex" }}>

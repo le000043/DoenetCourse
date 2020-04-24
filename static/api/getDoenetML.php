@@ -20,7 +20,8 @@ if ($row["accessAllowed"] != 1){
 
 $contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
-
+// echo "contentID\n";
+// echo $contentId;
 
 
 if ($contentId == "" && $branchId == ""){
@@ -40,7 +41,7 @@ if ($contentId == "" && $branchId == ""){
 	if ($result->num_rows < 1){
 		$response_arr = array(
 			"success" => 0,
-			"doenetML" => "",
+			"doenetML" => "none",
 			);
 	}else{
 		$content_id_array = array();
@@ -62,7 +63,7 @@ if ($contentId == "" && $branchId == ""){
 		$title = $row["title"];
 	
 			$response_arr = array(
-				"success" => 1,
+				"success" => 2,
 				"doenetML" => $doenetML,
 				"title"=>$title,
 				"contentIds"=>$content_id_array
@@ -81,7 +82,7 @@ if ($contentId == "" && $branchId == ""){
 	
 	
 			$response_arr = array(
-				"success" => 1,
+				"success" => 3,
 				"doenetML" => $doenetML,
 				"title"=>$title,
 				"contentIds"=>$content_id_array

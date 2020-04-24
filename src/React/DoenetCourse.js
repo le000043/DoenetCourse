@@ -8,7 +8,8 @@ import query from '../queryParamFuncs';
 import DoenetBox from '../React/DoenetBox';
 import { faWindowClose, faEdit,faArrowLeft,faPlus, faUserSecret} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import ToolLayout from "./ToolLayout/ToolLayout";
+import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 // import {
 //   BrowserRouter as Router,
 //   Switch,
@@ -233,13 +234,13 @@ class Grades extends Component {
     // this.props.gradeCategories, this.props.score, this.props.subtotal
     // this.props.total
     console.log("GRADE CONSTRUCTOR")
-    console.log(this.props.student)
-    console.log(this.props.sections)
-    console.log(this.props.group)
-    console.log(this.props.gradeCategories)
-    console.log(this.props.score)
-    console.log(this.props.subtotal)
-    console.log(this.props.total)
+    // console.log(this.props.student)
+    // console.log(this.props.sections)
+    // console.log(this.props.group)
+    // console.log(this.props.gradeCategories)
+    // console.log(this.props.score)
+    // console.log(this.props.subtotal)
+    // console.log(this.props.total)
     // this.student = this.props.student
     // this.sections = this.props.sections
     // this.group = this.props.group
@@ -352,13 +353,6 @@ class Grades extends Component {
 
   render() {
     console.log("===GRADES===")
-    console.log(this.student)
-    console.log(this.sections)
-    console.log(this.group)
-    console.log(this.gradeCategories)
-    console.log(this.score)
-    console.log(this.subtotal)
-    console.log(this.total)
     if (!this.state.dataLoaded) {
       return (<p>Loading...</p>)
     }
@@ -597,21 +591,22 @@ class Assignments extends Component {
   constructor(props) {
     super(props);
     this.assignmentDoenetML = this.props.assignmentDoenetML
+    console.log("from assignments")
+    console.log(this.assignmentDoenetML)
 
   }
   render() {
     return (
       // <React.Fragment>
 
-      <div style={this.props.style} className="homeActiveSectionMain" data-cy="syllabusNavItem">
-
+      <>
         {/* <span className="Section-Text">Assignment is loading if not already here</span> */}
         {this.assignmentDoenetML!="" && this.assignmentDoenetML!=null?
         
         <DoenetViewer
-          key={"doenetviewer"}
+          key={"doenetviewer"+this.assignmentDoenetML}
           // free={{doenetCode: this.assignmentDoenetML}}
-      doenetML={this.assignmentDoenetML}
+          doenetML={this.assignmentDoenetML}
 
           course={true}
           attemptNumber={this.latestAttemptNumber}
@@ -624,7 +619,7 @@ class Assignments extends Component {
             interactive: false,
           }}
         />:<p>Not yet available</p>}
-              </div>
+              </>
 
               // </React.Fragment>
         )
@@ -640,6 +635,10 @@ class DoenetCourse extends Component {
     this.instructorRights = false
     this.assignmentIndex = 0;
     this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
+
+    this.editCategoryButton=null
+    this.switchCategoryButton=null
+
     this.AssignmentInfoPackageReady = false
     this.thisAssignmentInfo=""
     this.grade_route = null
@@ -777,6 +776,7 @@ class DoenetCourse extends Component {
      this.makeTreeArray=[]; // filled in buildTreeArray
      this.tree=[] // made in buildTree
      this.tree_route=[]
+     this.tree_route_right_column=[]
      this.alreadyMadeLink=[]
      this.headerId_arr = []
      this.assignmentId_arr=[]
@@ -1125,6 +1125,7 @@ class DoenetCourse extends Component {
     this.alreadyLoadAssignment=[]
     this.alreadyMadeLink=[]
     this.tree_route=[]
+    this.tree_route_right_column=[]
     this.overview_link=null
     this.syllabus_link=null
     this.grade_link=null
@@ -1238,15 +1239,22 @@ class DoenetCourse extends Component {
     this.thisAssignmentInfo = id
     let position = this.assignmentsIndexAndDoenetML[id]['indexInRouterArray']
     this.assignmentDoenetML = this.assignmentsIndexAndDoenetML[id]['doenetML']
-    //  this.tree_route = [this.tree_route.slice(0,position)] + [this.tree_route.slice(position+1,this.tree_route.length)]
     this.tree_route_temp=[]
+    this.tree_route_right_column_temp=[]
     for (let i=0;i<this.tree_route.length;i++){
       if (i!=position){
         this.tree_route_temp.push(this.tree_route[i])
       }
     } 
     this.tree_route = this.tree_route_temp
-
+///
+    for (let i=0;i<this.tree_route_right_column.length;i++){
+      if (i!=position){
+        this.tree_route_right_column_temp.push(this.tree_route[i])
+      }
+    } 
+    this.tree_route_right_column = this.tree_route_right_column_temp
+///
     this.alreadyMadeLink_temp=[]
     for (let i=0;i<this.alreadyMadeLink.length;i++){
       if (i!=position){
@@ -1312,7 +1320,9 @@ class DoenetCourse extends Component {
     // flex-direction: column;
     // `
     this.rightSideInfoColumn = (          
-    <div className="info">
+    <div 
+    // className="info"
+    >
 
     <span className="Section-Icon-Box">         
     <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/>
@@ -2483,15 +2493,36 @@ makeTreeRoute ({link,assignmentId}) {
   if (!(this.alreadyMadeLink.includes(link)) && link){
     console.log("===Making route====")
   // console.log(this.assignmentsIndexAndDoenetML[assignmentId])
+  let tree_route_right_column_branch = 
+  (
+    <Route key={link} exact path={link}>
+      <>
+      
+     {this.rightSideInfoColumn}
+      </>
+
+    </Route>
+    
+  )
+  this.tree_route_right_column.push(tree_route_right_column_branch);
+
     let tree_route_branch = 
   (
     <Route key={link} exact path={link}>
-      <React.Fragment>
+      <>
+     <Assignments  assignmentDoenetML={this.assignmentDoenetML}/>
+{/* 
+      <ToolLayout>
+      <ToolLayoutPanel>
 
-     <Assignments style={this.phone_info_style} assignmentDoenetML={this.assignmentDoenetML}/>
+     </ToolLayoutPanel>
 
+      <ToolLayoutPanel>
      {this.rightSideInfoColumn}
-     </React.Fragment>
+
+      </ToolLayoutPanel>
+      </ToolLayout> */}
+     </>
     </Route>
   )
   // console.log(tree_route_branch)
@@ -2528,6 +2559,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     contentId = this.assignment_obj[assignmentId]['contentId']
     branchId = this.assignment_obj[assignmentId]['branchId']
     const urlGetCode = '/api/getDoenetML.php';
+    console.log(contentId)
     const data = {
       branchId:branchId,
       contentId:contentId
@@ -2547,8 +2579,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.updateNumber++;
         this.assignmentDoenetML=doenetML;
         this.ListOfAlreadyDownLoadDoenetML[assignmentId] = this.assignmentDoenetML
-        // console.log("DOENET ML !!")
-        // console.log(assignmentId)
+        console.log("DOENET ML !!")
+        console.log(resp.data)
         // console.log(this.assignmentDoenetML)
           link = "/assignments/"+assignmentId
           // console.log("calling info 02")
@@ -2711,10 +2743,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.mainSection = this.overview;
   }
 
-  //   // TODO: what assignment get un-publish ?
 
   loadGrades(){
-    // console.log("loading grades in DoenetCourse")
     this.scores = {};
     this.subTotals = {};
       
@@ -2743,16 +2773,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         .catch(error=>{this.setState({error:error})});
   }
   
-  // buildGrades(){
-    
-  //   if (this.assignmentsData === null){
-  //     this.mainSection = this.loadingScreen;
-  //   }else{
-  //     this.buildGradesHelper();
-  //   }
 
-    
-  // }
 
   buildGradesHelper(){
     
@@ -3036,15 +3057,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.setState({error:error,errorInfo:info});
   }
 
-  // creditUpdate({credit}){
 
-  //   if (credit > this.assignmentObj.credit || !this.assignmentObj.credit){
-  //     this.assignmentObj.credit = credit;
-  //   }
-  //   this.forceUpdate();
-  // }
   loadingGrade(){
-    // console.log("loading grade from COurse")
     const loadGradsUrl = '/api/loadGradsLearner.php';
     const data = {
       courseId: this.courseId,
@@ -3062,7 +3076,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.group = resp.data.group;
 
         this.buildGrades();
-        // this.loadFirstTrue=(<Syllabus doenetML={this.Syllabus_doenetML}/>)
         this.loadFirstTrue=(<Grades parentFunction={(e)=>{this.activeSection="assignments";
         this.loadAssignmentFromGrade=true;
         this.makeTreeVisible({loadSpecificId:e})}}/>)
@@ -3073,29 +3086,142 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       .catch(error => { this.setState({ error: error }) });
   }
   loadSection(){
-    // console.log("inside load section")
-    // console.log("active is "+this.activeSection)
-    // console.log("this.alreadyLoadOverview: "+this.alreadyLoadOverview)
-    // console.log("this.alreadyLoadSyllabus: "+this.alreadyLoadSyllabus)
-    // console.log("Syllabus code: "+this.Syllabus_doenetML)
+    this.editCategoryButton=null
+    this.switchCategoryButton=null
     this.loadFirstTrue=null
-    if (this.activeSection==="overview" && !this.alreadyLoadOverview){
-      // console.log("====MAKING overview====")
+    console.log("loading section !")
+    if (this.activeSection==="overview"){
+      this.editCategoryButton = (
+        <button
+            style={{
+              backgroundColor: "#4CAF50",
+              border: "none",
+              color: "white",
+              padding: "8px 15px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "16px",
+              margin: "4px 2px",
+              cursor: "pointer"
+          }}
+              onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId}                     
+            >
+          <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
+            </button>
+      )
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableOverview} 
+            onChange={(e)=>{
+              this.enableOverview=!this.enableOverview;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
+      if (!this.alreadyLoadOverview){
       this.loadOverview();
-      // console.log("Overview branchid: "+this.overview_branchId)
-      // this.alreadyLoadOverview=true
-    } else if (this.activeSection==="syllabus"&& !this.alreadyLoadSyllabus) {
-      // console.log("====MAKING syllabus====")
+      }
+    } else if (this.activeSection==="syllabus") {
+      this.editCategoryButton = (
+        <button
+            style={{
+              backgroundColor: "#4CAF50",
+              border: "none",
+              color: "white",
+              padding: "8px 15px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "16px",
+              margin: "4px 2px",
+              cursor: "pointer"
+          }}
+              onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId}                     
+            >
+          <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
+            </button>
+      )
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableSyllabus} 
+            onChange={(e)=>{
+              this.enableSyllabus=!this.enableSyllabus;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
+      if(!this.alreadyLoadSyllabus){
       this.loadSyllabus();
-      // console.log("Overview branchid: "+this.overview_branchId)
-      // console.log("syllabus branchid: "+this.syllabus_branchId)
-
-      // this.alreadyLoadSyllabus = true
+      }
     } else if (this.activeSection==="grade") {
+      this.editCategoryButton=null
+      // this.editCategoryButton = (
+      //   <button
+      //       style={{
+      //         backgroundColor: "#4CAF50",
+      //         border: "none",
+      //         color: "white",
+      //         padding: "8px 15px",
+      //         textAlign: "center",
+      //         textDecoration: "none",
+      //         display: "inline-block",
+      //         fontSize: "16px",
+      //         margin: "4px 2px",
+      //         cursor: "pointer"
+      //     }}
+      //         onClick={()=>window.location.href="/gradebook"}                     
+      //       >
+      //     <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
+      //       </button>
+      // )
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableGrade} 
+            onChange={(e)=>{
+              this.enableGrade=!this.enableGrade;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
       this.loadingGrade();
-      // this.loadFirstTrue=(<Grades/>)
     } 
     else if (this.activeSection==="assignments") {
+      this.editCategoryButton=null
+      console.log("loading assignment")
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableAssignment} 
+            onChange={(e)=>{
+              this.enableAssignment=!this.enableAssignment;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
       this.assignmentIsClicked=true;
       this.showsAllAssignment=!this.showsAllAssignment;
       this.assignmentOnScreen = false;
@@ -3106,15 +3232,11 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.makeTreeVisible({loadSpecificId:""})
       }
     }
-    // else {
-    //   console.log("====ALREADY MADE=====")
-    // }
+
 
   }
   makeTreeVisible({loadSpecificId}) {
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
-    console.log("inside make tree")
-    // console.log(this.currentCourseId)
     this.assignment_obj = {}
     this.heading_obj = {}
     const data={        
@@ -3123,12 +3245,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     const payload = {
       params: data
     }
-    // if (!this.alreadyMadeTree){
       axios.get(url_header_assignment,payload)
     .then (resp=>{
       this.obj_return = resp.data;
-      // console.log(resp.data)
-      //let lengthOfReturnArray = (this.obj_return.length)
+
       this.alreadyMadeTree=true;
       let iterator=0;      
       let keys = (Object.keys(this.obj_return));
@@ -3174,7 +3294,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.buildTreeArray()
         this.buildTree()
         this.alreadyHadAssignmentsIndexAndDoenetML = true
-        this.assignmentTree = (<div className="homeActiveSectionMainTree">{this.tree}</div>);
+        this.assignmentTree = (<div 
+          // className="homeActiveSectionMainTree"
+        >{this.tree}</div>);
 
         if (this.LoadAssignmentFromTheBeginningFlag) {
         this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
@@ -3184,56 +3306,21 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
         this.loadAssignmentFromGrade=false
         }
-      // this.loadFirstTrue=(this.assignmentTree)
-      console.log(" from makeTreeVisible line 3171")
       this.forceUpdate();
       
     }).catch(error=>{this.setState({error:error})});
-    // }  
     
     
   }
   updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
-    console.log("inside updateLocationBar")
     window.location.href="/course/#/"+this.activeSection
-    // history.replaceState({},"title","?active="+activeSection);
-    // if (assignmentId!=undefined && assignmentId!=null){
-    //   assignmentId=assignmentId['assignmentId']
-    // }
-    // if (this.activeSection === "assignment") {
-    //   history.replaceState({},"title","?active="+activeSection+"&assignmentId="+assignmentId);
-    // }
-    // this.buildTree()
+
   }
 
-  // windowResizeHandler(){
-  //   let deviceGivenWidth = this.widthToDevice();
-  //   if (this.state.deviceGivenWidth !== deviceGivenWidth){
-  //     this.setState({deviceGivenWidth: deviceGivenWidth});
-  //   }
-  // }
-
-  // widthToDevice(){
-  //   let w = document.documentElement.clientWidth;
-  //   if (w >= 1024){ return "computer"; }
-  //   if (w < 1024 && w >= 450){ return "tablet"; }
-  //   return "phone";
-  // }
-  // componentDidMount(){
-  //   window.addEventListener("resize",this.windowResizeHandler);
-  // }
-
-  // componentWillUnmount(){
-  //   window.removeEventListener("resize",this.windowResizeHandler);
-  // }
   render() {
     console.log("====RENDER====");
-    // console.log(this.state.deviceGivenWidth)
-    // if (!this.assignmentTree && this.activeSection==="assignments"){
-    //   this.makeTreeVisible({loadSpecificId:""})
-    // }
-    let phone_homeLeftNav_style={}
-    // let phone_info_style={}
+    console.log(this.editCategoryButton)
+    // let phone_homeLeftNav_style={}
 
     if (this.state.deviceGivenWidt==="phone"){
       phone_homeLeftNav_style = {
@@ -3247,8 +3334,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.syllabus_link=null
     this.grade_link=null
     this.assignment_link=null
-    // console.log(this.overview_branchId)
-    // console.log(this.syllabus_branchId)
 
     if (!this.alreadyLoadAllCourses){
       this.loadAllCourses()
@@ -3315,15 +3400,19 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.forceUpdate()}}>
         <span className={overview_class_text}>Overview</span>       
         </Link>
-        {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
+        {/* {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
           <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
           <label className="switch">
-            <input checked={this.enableOverview} onChange={(e)=>{this.enableOverview=!this.enableOverview;
+            <input 
+            type="checkbox"
+            checked={this.enableOverview} 
+            onChange={(e)=>{
+              this.enableOverview=!this.enableOverview;
               this.newChange = true;
               this.findEnabledCategory();
-              }} type="checkbox"/>
+              }} />
           <span className="slider round"></span>
-      </label></React.Fragment>):null}
+      </label></React.Fragment>):null} */}
         </div>)
     }
     if(this.rightToEdit || (this.rightToView && this.enableSyllabus)){
@@ -3339,14 +3428,14 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.forceUpdate()}}>
       <span className={syllabus_class_text}>Syllabus</span>      
       </Link>
-        {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
+        {/* {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
       <FontAwesomeIcon className="Section-Icon"
       onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} 
       icon={faEdit}/></span>
       <label className="switch">
           <input checked={this.enableSyllabus} onChange={(e)=>{this.enableSyllabus = !this.enableSyllabus;this.newChange=true;this.findEnabledCategory();}} type="checkbox"/>
         <span className="slider round"></span>
-      </label></React.Fragment>):null}
+      </label></React.Fragment>):null} */}
       </div>
       )
     }
@@ -3362,12 +3451,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.forceUpdate()}}>
       <span className={grade_class_text}>Grade</span>
       </Link>
-      {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
-      <FontAwesomeIcon className="Section-Icon" icon={faEdit}/></span>
+      {/* {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
+      <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>
+      </span>
       <label className="switch">
             <input checked={this.enableGrade} onChange={(e)=>{this.enableGrade=e.target.checked;this.newChange=true;this.findEnabledCategory();}} type="checkbox"/>
           <span className="slider round"></span>
-        </label></React.Fragment>):null}
+        </label></React.Fragment>):null} */}
         </div>
       )
       this.grade_route=(
@@ -3394,152 +3484,231 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       <span className={assignment_class_text}>Assignments</span>
         
       </Link>
-      {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
+      {/* {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
           <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
           <label className="switch">
             <input checked={this.enableAssignment} onChange={(e)=>{this.enableAssignment=!this.enableAssignment;this.newChange=true;this.findEnabledCategory();}} type="checkbox"/>
           <span className="slider round"></span>
-        </label></React.Fragment>):null}
+        </label></React.Fragment>):null} */}
       </div>
       )
     }
-    // if (this.AssignmentInfoPackageReady){
-    //   this.buildRightSideInfoColumn()
-    // }
-    // this.roles=(<select
-    // onChange={(e)=>{
-    //   if (e.target.value==="Student"){
-    //     this.rightToEdit=false
-    //   }
-    //   if (e.target.value==="Instructor"){
-    //     this.rightToEdit=true
-    //   }
-    //   this.alreadyLoadAssignment=[]
-    //   this.alreadyMadeLink=[]
-    //   this.tree_route=[]
-    //   this.overview_link=null
-    //   this.syllabus_link=null
-    //   this.grade_link=null
-    //   this.assignment_link=null
-    //   this.forceUpdate()
-    // }}>
-    //   {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
-    //   {this.instructorRights?(<option selected = {this.rightToEdit?true:false} value="Instructor">Instructor</option>):null}
-    // </select>)
 
     if (this.AssignmentInfoChanged){
       this.AssignmentInfoChanged=false;
       this.saveAssignmentInfo()
     }
     
-    // not yet implemented
-    // if (this.state.newChange===true){
-    // this.ToggleList();
-    // }
+
     return (
     <React.Fragment>
       <div className="courseContainer">
 
-        {(this.courseIdsArray!=[] && this.courseInfo!={}?
+      {(this.courseIdsArray!=[] && this.courseInfo!={}?
 
-          (<DoenetHeader 
-            key={"doenetHeader"+(this.updateNumber++)}
-            toolTitle="Course" 
-            headingTitle = {this.courseName}
-           
-            rights = {
-              {rightToEdit:this.rightToEdit,
-                rightToView:this.rightToView,
-                instructorRights : this.instructorRights,
+(<DoenetHeader 
+  key={"doenetHeader"+(this.updateNumber++)}
+  toolTitle="Course" 
+  headingTitle = {this.courseName}
+ 
+  rights = {
+    {rightToEdit:this.rightToEdit,
+      rightToView:this.rightToView,
+      instructorRights : this.instructorRights,
 
-                itemsToShow:this.permissionRoles,
+      itemsToShow:this.permissionRoles,
 
-                menuIcon:faUserSecret,
-                downloadPermission : this.parentUpdateDownloadPermission,
-                permissions : this.coursesPermissions,
-                arrayIds : this.courseIdsArray,
-                courseInfo : this.courseInfo,
-                defaultId : this.currentCourseId,
+      menuIcon:faUserSecret,
+      downloadPermission : this.parentUpdateDownloadPermission,
+      permissions : this.coursesPermissions,
+      arrayIds : this.courseIdsArray,
+      courseInfo : this.courseInfo,
+      defaultId : this.currentCourseId,
 
-                defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"")),
+      defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"")),
 
-                permissionCallBack :(e)=>{
-                  if (e==="Student"){
-                    this.rightToEdit=false
-                  }
-                  if (e==="Instructor"){
-                    this.rightToEdit=true
-                    this.instructorRights = true
-                  }
-    
-                  this.makeTreeArray=[]
-                  this.alreadyLoadOverview = false
-                  this.alreadyLoadSyllabus = false
-                  this.Overview_doenetML = ""
-                  this.Syllabus_doenetML = ""
-                  this.assignmentTree = null
-    
-                  this.alreadyLoadAssignment=[]
-                  this.alreadyMadeLink=[]
-                  this.tree_route=[]
-                  this.overview_link=null
-                  this.syllabus_link=null
-                  this.grade_link=null
-                  this.assignment_link=null
-                  if (this.activeSection==="assignments" && this.enableAssignment){
-                    this.makeTreeVisible({loadSpecificId:""})
-                  }
-                  console.log("clicking permissionCallBack")
-                  this.forceUpdate()
-                },
-                parentFunction:(e)=>{
-                  this.updateNumber+=1
-                  this.alreadyHasCourseInfo=false
-                  this.alreadyLoadAssignment=[]
-                  this.alreadyMadeLink=[]
-                  this.tree_route=[]
-    
-                  this.overview_branchId=""
-                  this.syllabus_branchId=""
-    
-                  this.overview_link=null
-                  this.syllabus_link=null
-                  this.grade_link=null
-                  this.assignment_link=null
-    
-                  this.currentCourseId = e;
-                  this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-                  this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-                  this.rightToView = false
-                  this.rightToEdit = false
-                  this.instructorRights = false
-                  if (this.accessAllowed==="1"){
-                    this.rightToView = true
-                    if (this.adminAccess==="1"){
-                      this.rightToEdit = true
-                      this.instructorRights = true
-                    }
-                  }
-                  this.usingDefaultCourseId = false
-                  this.alreadyLoadAllCourses = false
-    
-                  // this.AssignmentInfoChanged=true;
-                  this.forceUpdate()
-                  }
-              }
-            }
-            // rightToEdit = {this.rightToEdit}
-            // rightToView = {this.rightToView}
+      permissionCallBack :(e)=>{
+        if (e==="Student"){
+          this.rightToEdit=false
+        }
+        if (e==="Instructor"){
+          this.rightToEdit=true
+          this.instructorRights = true
+        }
+
+        this.makeTreeArray=[]
+        this.alreadyLoadOverview = false
+        this.alreadyLoadSyllabus = false
+        this.Overview_doenetML = ""
+        this.Syllabus_doenetML = ""
+        this.assignmentTree = null
+
+        this.alreadyLoadAssignment=[]
+        this.alreadyMadeLink=[]
+        this.tree_route=[]
+        this.tree_route_right_column=[]
+        this.overview_link=null
+        this.syllabus_link=null
+        this.grade_link=null
+        this.assignment_link=null
+        if (this.activeSection==="assignments" && this.enableAssignment){
+          this.makeTreeVisible({loadSpecificId:""})
+        }
+        this.forceUpdate()
+      },
+      parentFunction:(e)=>{
+        this.updateNumber+=1
+        this.alreadyHasCourseInfo=false
+        this.alreadyLoadAssignment=[]
+        this.alreadyMadeLink=[]
+        this.tree_route=[]
+        this.tree_route_right_column=[]
+
+
+        this.overview_branchId=""
+        this.syllabus_branchId=""
+
+        this.overview_link=null
+        this.syllabus_link=null
+        this.grade_link=null
+        this.assignment_link=null
+
+        this.currentCourseId = e;
+        this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+        this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+        this.rightToView = false
+        this.rightToEdit = false
+        this.instructorRights = false
+        if (this.accessAllowed==="1"){
+          this.rightToView = true
+          if (this.adminAccess==="1"){
+            this.rightToEdit = true
+            this.instructorRights = true
+          }
+        }
+        this.usingDefaultCourseId = false
+        this.alreadyLoadAllCourses = false
+
+        this.forceUpdate()
+        }
+    }
+  }
+
+  
+  
+   
+  />):null
+)}
+        <ToolLayout>
+        <ToolLayoutPanel
+            key={"TLP"+this.updateNumber++}
+            panelName="context"
+            // menuControls={[<button>abc</button>]}
+          >
+        <Router>
+          <>
+          <div  >
+
+              {this.roles}
+              {this.overview_link}
+              {this.syllabus_link}
+              {this.grade_link}
+
+              {this.assignment_link}
+
+              {this.activeSection==="assignments"&&this.enableAssignment?this.assignmentTree:null}
+              
+
+            </div>
+          </>
+        </Router>
             
-            
-            
-             
-            />):null
-          )}
+          </ToolLayoutPanel> 
+
+          <ToolLayoutPanel
+          key={"TLP"+this.updateNumber++}
+            panelName="Editor"
+            menuControls={[
+              (this.activeSection==="grade"||this.activeSection==="assignments"?null:
+              this.editCategoryButton),
+              this.switchCategoryButton
+          //   <button
+          //   style={{
+          //     backgroundColor: "#4CAF50",
+          //     border: "none",
+          //     color: "white",
+          //     padding: "8px 15px",
+          //     textAlign: "center",
+          //     textDecoration: "none",
+          //     display: "inline-block",
+          //     fontSize: "16px",
+          //     margin: "4px 2px",
+          //     cursor: "pointer"
+          // }}
+          //     onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId}                     
+          //   >
+          // <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
+          //   </button>,
+      //       <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+      //       <label className="switch">
+      //       <input 
+      //       type="checkbox"
+      //       checked={this.enableOverview} 
+      //       onChange={(e)=>{
+      //         this.enableOverview=!this.enableOverview;
+      //         this.newChange = true;
+      //         this.findEnabledCategory();
+      //         }} />
+      //     <span className="slider round"></span>
+      // </label>
+      // </div>
+          ]}
+          >
+            <Router>
+              <>
+              <Switch>
+                <Route key="overview" exact path="/overview">
+                  {this.Overview_doenetML!="" && this.Overview_doenetML!=undefined?
+                  <Overview doenetML={this.Overview_doenetML}
+                  
+                  />
+                  :null}
+                </Route>
+                <Route key="syllabus" exact path="/syllabus">
+                  {this.Syllabus_doenetML!="" && this.Syllabus_doenetML!=undefined?<Syllabus doenetML={this.Syllabus_doenetML}/>:null}             
+                </Route>
+                {this.grade_route}
+                <Route key="/" exact path="/">
+                {this.loadFirstTrue}
+                </Route>
+                <Route key ="assignments" exact path='/assignments'>
+                </Route>
+                {this.tree_route}
+              </Switch>
+              </>
+            </Router>
+          </ToolLayoutPanel> 
+
+          <ToolLayoutPanel
+          key={"TLP"+this.updateNumber++}>
+            <Router>
+              <>
+              <Switch>
+                {this.tree_route_right_column}
+              </Switch>
+              </>
+            </Router>
+          </ToolLayoutPanel>
+        </ToolLayout>
+
+      </div>
+
+
+      {/* <div className="courseContainer">
+
         
         <Router>
           <>
-         {/* {this.activeSection==="overview"?this.loadOverview:this.loadSyllabus} */}
 
             <div style={phone_homeLeftNav_style} className="homeLeftNav">
 
@@ -3568,8 +3737,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   {this.loadFirstTrue}
   </Route>
   <Route key ="assignments" exact path='/assignments'>
-  <div>
-    </div>
   </Route>
   {this.tree_route}
 </Switch>
@@ -3579,14 +3746,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           </>
         </Router>
 
-      </div>
-      {/* <div id="pageNavPhone">
-          <div className="pageNav">
-            <button className="selected" onClick={()=>this.setState({phone_panel_active:"Context Panel"})} ><span>Context Panel</span></button>
-            <button  className="selected" onClick={()=>this.setState({phone_panel_active:"Editor"})}><span>Editor</span></button>
-            <button  className="selected" onClick={()=>this.setState({phone_panel_active:"Viewer"})} ><span>Viewer</span></button>
-          </div>
-        </div> */}
+      </div> */}
+
     </React.Fragment>)
     
   }
