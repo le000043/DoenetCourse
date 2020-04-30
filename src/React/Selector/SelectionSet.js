@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useState,useEffect,useRef } from 'react';
 import styled from 'styled-components';
 
 // import './menu.css';
@@ -35,16 +35,31 @@ const SelectionSet = ({setName,set}) =>{
     </div>)
     sets.push(branch)
   })
+  const node = useRef();
+  useEffect(() => {
+            document.addEventListener('click',handleClick, false);
+            return () => {
+            document.removeEventListener('click', handleClick, false);
+            };
+          });
+          const handleClick = e =>{
+            if (!node.current.contains(e.target)){
+              // outside click
+              console.log("outside")
+              setSelectedItem("")
+            }
+          }
+  
 return (
-  <>
-  <div
+  <div ref={node}>
+  <div 
     key={updateNumber++}
   onClick={()=>{setSelectedItem("");setOpen(!open)}}
   >
   {setName}
   </div>
   {open && sets}
-  </>
+  </div>
 )
 };
 export default SelectionSet;
