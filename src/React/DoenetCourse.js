@@ -662,6 +662,7 @@ class DoenetCourse extends Component {
      this.timeLimit=null;
      this.numberOfAttemptsAllowed=0;
       this.assignmentsIndexAndDoenetML = {}
+      this.coursesToChoose={}
     this.listOfOptions=["None","Gateway","Problem Sets","Projects","Exams","Participation"]
 
     this.alreadyHadAssignmentsIndexAndDoenetML=false
@@ -3344,8 +3345,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
-    console.log(this.courseInfo)
-    console.log(this.coursesPermissions)
+    // console.log(this.courseInfo)
+    // console.log(this.coursesPermissions)
+    console.log(this.coursesToChoose)
     // let phone_homeLeftNav_style={}
 
     // if (this.state.deviceGivenWidt==="phone"){
@@ -3524,7 +3526,19 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.AssignmentInfoChanged=false;
       this.saveAssignmentInfo()
     }
-    
+    // making courses to choose
+    this.coursesToChoose={}
+    if (this.courseIdsArray!=[]){
+      this.courseIdsArray.map((id)=>{
+        this.coursesToChoose[id]={
+          showText:this.courseInfo[id]['courseName'],
+          callBackFunction:(e)=>{
+          this.currentCourseId = e;
+            // this.courseChosenCallBack({e:e})
+          } 
+        }
+      })
+    }
 
     return (
     <React.Fragment>
@@ -3630,7 +3644,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             key={"TLP01"+this.updateNumber++}
             panelName="context"
             menuControls={[
-              <Menu
+              (this.coursesToChoose?<Menu
               currentTool={"something"}
               width={"500px"}
               key={"menu00"+(this.updateNumber++)}           
@@ -3639,6 +3653,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               offsetPos={-47}
               menuWidth={"500px"}
               />
+              :null)
             ]}
           >
         <Router>
