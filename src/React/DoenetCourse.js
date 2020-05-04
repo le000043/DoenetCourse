@@ -642,7 +642,7 @@ class DoenetCourse extends Component {
     this.showSelectionItem = true;
     this.editCategoryButton=null
     this.switchCategoryButton=null
-
+    this.state={currentNode:null};
     this.AssignmentInfoPackageReady = false
     this.thisAssignmentInfo=""
     this.grade_route = null
@@ -3089,83 +3089,19 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       .catch(error => { this.setState({ error: error }) });
   }
   loadSection(){
-    this.editCategoryButton=null
-    this.switchCategoryButton=null
+    // this.editCategoryButton=null
+    // this.switchCategoryButton=null
     this.loadFirstTrue=null
     console.log("loading section !")
     if (this.activeSection==="overview"){
-      this.editCategoryButton = (
-        <button
-            style={{
-              backgroundColor: "#4CAF50",
-              border: "none",
-              color: "white",
-              padding: "8px 15px",
-              textAlign: "center",
-              textDecoration: "none",
-              display: "inline-block",
-              fontSize: "16px",
-              margin: "4px 2px",
-              cursor: "pointer"
-          }}
-              onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId}                     
-            >
-          <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
-            </button>
-      )
-      this.switchCategoryButton=(
-        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
-            <label className="switch">
-            <input 
-            type="checkbox"
-            checked={this.enableOverview} 
-            onChange={(e)=>{
-              this.enableOverview=!this.enableOverview;
-              this.newChange = true;
-              this.findEnabledCategory();
-              }} />
-          <span className="slider round"></span>
-      </label>
-      </div>
-      )
+      
+      
       if (!this.alreadyLoadOverview){
       this.loadOverview();
       }
     } else if (this.activeSection==="syllabus") {
-      this.editCategoryButton = (
-        <button
-            style={{
-              backgroundColor: "#4CAF50",
-              border: "none",
-              color: "white",
-              padding: "8px 15px",
-              textAlign: "center",
-              textDecoration: "none",
-              display: "inline-block",
-              fontSize: "16px",
-              margin: "4px 2px",
-              cursor: "pointer"
-          }}
-              onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId}                     
-            >
-          <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
-            </button>
-      )
-      this.switchCategoryButton=(
-        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
-            <label className="switch">
-            <input 
-            type="checkbox"
-            checked={this.enableSyllabus} 
-            onChange={(e)=>{
-              this.enableSyllabus=!this.enableSyllabus;
-              this.newChange = true;
-              this.findEnabledCategory();
-              }} />
-          <span className="slider round"></span>
-      </label>
-      </div>
-      )
+      
+      
       if(!this.alreadyLoadSyllabus){
       this.loadSyllabus();
       }
@@ -3190,41 +3126,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       //     <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
       //       </button>
       // )
-      this.switchCategoryButton=(
-        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
-            <label className="switch">
-            <input 
-            type="checkbox"
-            checked={this.enableGrade} 
-            onChange={(e)=>{
-              this.enableGrade=!this.enableGrade;
-              this.newChange = true;
-              this.findEnabledCategory();
-              }} />
-          <span className="slider round"></span>
-      </label>
-      </div>
-      )
+      
       this.loadingGrade();
     } 
     else if (this.activeSection==="assignments") {
       this.editCategoryButton=null
       console.log("loading assignment")
-      this.switchCategoryButton=(
-        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
-            <label className="switch">
-            <input 
-            type="checkbox"
-            checked={this.enableAssignment} 
-            onChange={(e)=>{
-              this.enableAssignment=!this.enableAssignment;
-              this.newChange = true;
-              this.findEnabledCategory();
-              }} />
-          <span className="slider round"></span>
-      </label>
-      </div>
-      )
+      
       this.assignmentIsClicked=true;
       this.showsAllAssignment=!this.showsAllAssignment;
       this.assignmentOnScreen = false;
@@ -3319,20 +3227,134 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     window.location.href="/course/#/"+this.activeSection
 
   }
-
+  makingSwitchAndEditButton(){
+    this.editCategoryButton=null
+    this.switchCategoryButton=null
+  if (this.rightToEdit){
+    if (this.activeSection==="overview"){
+      this.editCategoryButton = (
+        <button
+            style={{
+              backgroundColor: "#4CAF50",
+              border: "none",
+              color: "white",
+              padding: "8px 15px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "16px",
+              margin: "4px 2px",
+              cursor: "pointer"
+          }}
+              onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId}                     
+            >
+          <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
+            </button>
+      )
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableOverview} 
+            onChange={(e)=>{
+              this.enableOverview=!this.enableOverview;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
+    }
+    else if (this.activeSection==="syllabus"){
+      
+      this.editCategoryButton = (
+        <button
+            style={{
+              backgroundColor: "#4CAF50",
+              border: "none",
+              color: "white",
+              padding: "8px 15px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "16px",
+              margin: "4px 2px",
+              cursor: "pointer"
+          }}
+              onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId}                     
+            >
+          <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
+            </button>
+      )
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableSyllabus} 
+            onChange={(e)=>{
+              this.enableSyllabus=!this.enableSyllabus;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
+    }
+    else if (this.activeSection==="grade"){
+      this.editCategoryButton=null
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableGrade} 
+            onChange={(e)=>{
+              this.enableGrade=!this.enableGrade;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
+    }
+    else if (this.activeSection==="assignments"){
+      this.editCategoryButton=null
+      this.switchCategoryButton=(
+        <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
+            <label className="switch">
+            <input 
+            type="checkbox"
+            checked={this.enableAssignment} 
+            onChange={(e)=>{
+              this.enableAssignment=!this.enableAssignment;
+              this.newChange = true;
+              this.findEnabledCategory();
+              }} />
+          <span className="slider round"></span>
+      </label>
+      </div>
+      )
+    }
+  }
+  }
   render() {
     console.log("====RENDER====");
-    console.log(`this.showSelectionItem: ${this.showSelectionItem}`)
+    console.log(this.activeSection)
     // let phone_homeLeftNav_style={}
 
-    if (this.state.deviceGivenWidt==="phone"){
-      phone_homeLeftNav_style = {
-        gridColumn: "1 / 2",
-        gridRow: "2 /  3"  
-      }
-      this.phone_info_style={display:"None"}
-    } 
-
+    // if (this.state.deviceGivenWidt==="phone"){
+    //   phone_homeLeftNav_style = {
+    //     gridColumn: "1 / 2",
+    //     gridRow: "2 /  3"  
+    //   }
+    //   this.phone_info_style={display:"None"}
+    // } 
+    this.makingSwitchAndEditButton()
     this.overview_link=null
     this.syllabus_link=null
     this.grade_link=null
@@ -3617,29 +3639,41 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
               {this.assignment_link}
 
-              {this.activeSection==="assignments"&&this.enableAssignment?this.assignmentTree:null}
+              {this.activeSection==="assignments"?this.assignmentTree:null}
               
 
           </>
         </Router>
-        <Selection show={this.showSelectionItem} 
-            callBack={()=>console.log("X")} label="choice X" />
-            <SelectionSet 
-            setName="Set01" 
-            set={
-              {"choiceA":(()=>{console.log("choiceA")}),
-              "choiceB":(()=>{console.log("choiceB")}),
-              "choiceC":(()=>{console.log("choiceC")}),
+        <SelectionSet 
+            key={"SelectSet1"+(this.updateNumber++)}
+            CommonCallBack={(e)=>{console.log(e)}} //default callBack for every choices
+            allElements={
+              {
+                element01:{
+                  type:"IndependentItem",
+                  thisElementLabel:"choice01",
+                  callBack:(()=>{console.log("choice001")}),
+                },
+                element02:{
+                  type:"IndependentSet",
+                  thisElementLabel:"Set01",
+                  subSet:["choiceA","choiceB","choiceC"],
+                  OverloadingFunctionOnItems:{
+                    "choiceB":(()=>{console.log("IT IS choiceB")})
+                  }
+                },
+                element03:{
+                  type:"IndependentSet",
+                  thisElementLabel:"Set02",
+                  subSet:["choiceX","choiceY","choiceZ"],
+                  OverloadingFunctionOnItems:{
+                    "choiceZ":(()=>{console.log("choiceZZZ")})
+                  }
+                }
+              }
             }
-            }/>
-            <SelectionSet 
-            setName="Set02" 
-            set={
-              {"choiceX":(()=>{console.log("choiceX")}),
-              "choiceY":(()=>{console.log("choiceY")}),
-              "choiceZ":(()=>{console.log("choiceZ")}),
-            }
-            }/>
+            />
+
           </ToolLayoutPanel> 
 
           <ToolLayoutPanel
@@ -3649,36 +3683,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               (this.activeSection==="grade"||this.activeSection==="assignments"?null:
               this.editCategoryButton),
               this.switchCategoryButton
-          //   <button
-          //   style={{
-          //     backgroundColor: "#4CAF50",
-          //     border: "none",
-          //     color: "white",
-          //     padding: "8px 15px",
-          //     textAlign: "center",
-          //     textDecoration: "none",
-          //     display: "inline-block",
-          //     fontSize: "16px",
-          //     margin: "4px 2px",
-          //     cursor: "pointer"
-          // }}
-          //     onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId}                     
-          //   >
-          // <FontAwesomeIcon className="Section-Icon" icon={faEdit}/>              
-          //   </button>,
-      //       <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
-      //       <label className="switch">
-      //       <input 
-      //       type="checkbox"
-      //       checked={this.enableOverview} 
-      //       onChange={(e)=>{
-      //         this.enableOverview=!this.enableOverview;
-      //         this.newChange = true;
-      //         this.findEnabledCategory();
-      //         }} />
-      //     <span className="slider round"></span>
-      // </label>
-      // </div>
+
           ]}
           >
             <Router>
