@@ -3630,7 +3630,15 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             key={"TLP01"+this.updateNumber++}
             panelName="context"
             menuControls={[
-              <Menu/>
+              <Menu
+              currentTool={"something"}
+              width={"500px"}
+              key={"menu00"+(this.updateNumber++)}           
+              showThisRole={this.courseInfor?(this.courseInfo[this.currentCourseId]['courseName']+"  "):""}
+              itemsToShow = {this.coursesToChoose}
+              offsetPos={-47}
+              menuWidth={"500px"}
+              />
             ]}
           >
         <Router>
