@@ -10,7 +10,7 @@ import { faWindowClose, faEdit,faArrowLeft,faPlus, faUserSecret} from '@fortawes
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
-
+import Menu from './menu.js'
 import Selection from "./Selector/Selection";
 import SelectionSet from "./Selector/SelectionSet";
 
@@ -3344,7 +3344,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
-    console.log(this.activeSection)
+    console.log(this.courseInfo)
+    console.log(this.coursesPermissions)
     // let phone_homeLeftNav_style={}
 
     // if (this.state.deviceGivenWidt==="phone"){
@@ -3628,7 +3629,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         <ToolLayoutPanel
             key={"TLP01"+this.updateNumber++}
             panelName="context"
-            // menuControls={[<button>abc</button>]}
+            menuControls={[
+              <Menu/>
+            ]}
           >
         <Router>
           <>
