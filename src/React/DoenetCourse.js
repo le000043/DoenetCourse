@@ -23,13 +23,9 @@ import SelectionSet from "./Selector/SelectionSet";
 // } from "react-router-dom";
 import {
   HashRouter as Router, // TODO: try not to use HashRouter, user BrownserRouter instead
-  // TODO: try to save data loaded
-  useLocation,
   Switch,
   Route,
   Link,
-  withRouter
-  // Redirect,
 } from "react-router-dom";
 // import queryString from 'query-string'
 // import { useParams } from "react-router";
@@ -663,6 +659,7 @@ class DoenetCourse extends Component {
      this.numberOfAttemptsAllowed=0;
       this.assignmentsIndexAndDoenetML = {}
       this.coursesToChoose={}
+      this.allElementsCopy={}
     this.listOfOptions=["None","Gateway","Problem Sets","Projects","Exams","Participation"]
 
     this.alreadyHadAssignmentsIndexAndDoenetML=false
@@ -880,9 +877,9 @@ class DoenetCourse extends Component {
             this.trueList.push("syllabus")
             this.syllabus_branchId=resp.data["syllabus_branchId"]
           }
-          this.enableGrade=!!(+(resp.data["grade"]))
+          this.enableGrade=!!(+(resp.data["grades"]))
           if (this.enableGrade){
-            this.trueList.push("grade")
+            this.trueList.push("grades")
           }
           this.enableAssignment=!!(+(resp.data["assignment"]))
           if (this.enableAssignment){
@@ -899,7 +896,7 @@ class DoenetCourse extends Component {
           } else if (location=="#/syllabus"){
             this.activeSection="syllabus"
           } else if (location=="#/grades"){
-            this.activeSection="grade"
+            this.activeSection="grades"
           } else  {
             this.activeSection="assignments"
             this.LoadAssignmentFromTheBeginning({location:location})
@@ -1039,7 +1036,7 @@ class DoenetCourse extends Component {
           }
           this.enableGrade=!!(+(resp.data.courseInfo[this.currentCourseId]["gradeEnabled"]))
           if (this.enableGrade || this.rightToEdit){
-            this.trueList.push("grade")
+            this.trueList.push("grades")
           }
           this.enableAssignment=!!(+(resp.data.courseInfo[this.currentCourseId]["assignmentEnabled"]))
           if (this.enableAssignment || this.rightToEdit){
@@ -1056,7 +1053,7 @@ class DoenetCourse extends Component {
           } else if (location=="#/syllabus"){
             this.activeSection="syllabus"
           } else if (location=="#/grades"){
-            this.activeSection="grade"
+            this.activeSection="grades"
           } else  {
             this.activeSection="assignments"
             this.LoadAssignmentFromTheBeginning({location:location})
@@ -1083,7 +1080,7 @@ class DoenetCourse extends Component {
           }
           this.enableGrade=!!(+(this.courseInfo[this.currentCourseId]["gradeEnabled"]))
           if (this.enableGrade){
-            this.trueList.push("grade")
+            this.trueList.push("grades")
           }
           this.enableAssignment=!!(+(this.courseInfo[this.currentCourseId]["assignmentEnabled"]))
           if (this.enableAssignment){
@@ -1100,7 +1097,7 @@ class DoenetCourse extends Component {
           } else if (location=="#/syllabus"){
             this.activeSection="syllabus"
           } else if (location=="#/grades"){
-            this.activeSection="grade"
+            this.activeSection="grades"
           } else  {
             this.activeSection="assignments"
             this.LoadAssignmentFromTheBeginning({location:location})
@@ -1164,9 +1161,9 @@ class DoenetCourse extends Component {
           this.trueList.push("syllabus")
           this.syllabus_branchId=resp.data["syllabus_branchId"]
         }
-        // this.enableGrade=!!(+(resp.data["grade"]))
+        // this.enableGrade=!!(+(resp.data["grades"]))
         if (this.enableGrade){
-          this.trueList.push("grade")
+          this.trueList.push("grades")
         }
         // this.enableAssignment=!!(+(resp.data["assignment"]))
         if (this.enableAssignment){
@@ -3106,7 +3103,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       if(!this.alreadyLoadSyllabus){
       this.loadSyllabus();
       }
-    } else if (this.activeSection==="grade") {
+    } else if (this.activeSection==="grades") {
       this.editCategoryButton=null
       // this.editCategoryButton = (
       //   <button
@@ -3305,7 +3302,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       </div>
       )
     }
-    else if (this.activeSection==="grade"){
+    else if (this.activeSection==="grades"){
       this.editCategoryButton=null
       this.switchCategoryButton=(
         <div style={{padding:"2px 2px 2px 2px",margin:"5px 2px 2px 2px"}}>
@@ -3345,9 +3342,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
-    // console.log(this.courseInfo)
+              // showThisRole={this.courseInfo?(this.courseInfo[this.currentCourseId]['courseName']+"  "):""}
+    console.log(this.enableAssignment)
     // console.log(this.coursesPermissions)
-    console.log(this.coursesToChoose)
+    // console.log(this.coursesToChoose)
     // let phone_homeLeftNav_style={}
 
     // if (this.state.deviceGivenWidt==="phone"){
@@ -3410,22 +3408,40 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         overview_class = "SectionContainer-Active";
       } else if (this.activeSection === "syllabus"){
         syllabus_class = "SectionContainer-Active";
-      } else if (this.activeSection === "grade"){
+      } else if (this.activeSection === "grades"){
         grade_class = "SectionContainer-Active";
       } else if (this.activeSection === "assignments"){
         assignment_class = "SectionContainer-Active";
       }
     if (this.rightToEdit || (this.rightToView && this.enableOverview)){
+      this.allElementsCopy['element01']={
+        type:"IndependentItem",
+        thisElementLabel:"overview",
+        grayOut:!this.enableOverview,
+        callBack:(()=>{
+          this.activeSection="overview";
+          this.thisAssignmentInfo="";
+          this.loadSection();
+          this.componentLoadedFromNavigationBar=null;
+          console.log("clicking overview_link")
+          this.forceUpdate()
+        }
+          ),
+      }
       this.overview_link = (
         <div className={overview_class}>
-      <Link to={'/overview'}
+      <Link 
+      to={'/overview'}
       data-cy="overviewNavItem" 
-      onClick={()=>{this.activeSection="overview";
+      onClick={()=>{
+        this.activeSection="overview";
       this.thisAssignmentInfo="";
       this.loadSection();
       this.componentLoadedFromNavigationBar=null;
       console.log("clicking overview_link")
-      this.forceUpdate()}}>
+      // this.forceUpdate()
+    }}
+      >
         <span className={overview_class_text}>Overview</span>       
         </Link>
         {/* {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
@@ -3444,6 +3460,21 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         </div>)
     }
     if(this.rightToEdit || (this.rightToView && this.enableSyllabus)){
+      this.allElementsCopy['element02']={
+        type:"IndependentItem",
+        thisElementLabel:"syllabus",
+        grayOut:!this.enableSyllabus,
+        callBack:(()=>{
+          this.activeSection="syllabus";
+          this.thisAssignmentInfo="";
+          this.loadSection();
+          this.componentLoadedFromNavigationBar=null;
+          console.log("clicking syllabus_link")
+          this.forceUpdate()
+        }
+          ),
+      }
+
       this.syllabus_link = (
         <div className={syllabus_class}>
       <Link to={'/syllabus'} 
@@ -3468,11 +3499,26 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       )
     }
     if (this.rightToEdit || (this.rightToView && this.enableGrade)){
+      this.allElementsCopy['element03']={
+        type:"IndependentItem",
+        thisElementLabel:"grades",
+        grayOut:!this.enableGrade,
+        callBack:(()=>{
+          this.activeSection="grades";
+          this.thisAssignmentInfo="";
+          this.loadSection();
+          this.componentLoadedFromNavigationBar=null;
+          this.editCategoryButton=null
+          console.log("clicking grade_link")
+          this.forceUpdate()
+        }
+          ),
+      }
       this.grade_link = (
         <div className={grade_class}>
       <Link to={'/grades'} 
       data-cy="gradesNavItem"
-      onClick={()=>{this.activeSection="grade";
+      onClick={()=>{this.activeSection="grades";
       this.thisAssignmentInfo="";
       this.componentLoadedFromNavigationBar=null;
       console.log("clicking grade_link")      
@@ -3489,7 +3535,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         </div>
       )
       this.grade_route=(
-        <Route key="grade" exact path="/grades">
+        <Route key="grades" exact path="/grades">
                   <Grades parentFunction={(e)=>{this.activeSection="assignments";this.loadAssignmentFromGrade=true;this.makeTreeVisible({loadSpecificId:e})}}/>
                   {/* //this.props.student, this.props.sections, this.props.group,
                   // this.props.gradeCategories, this.props.score, this.props.subtotal
@@ -3499,6 +3545,22 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       )
     }
     if (this.rightToEdit || (this.rightToView && this.enableAssignment)){
+      this.allElementsCopy['element04']={
+        type:"IndependentItem",
+        thisElementLabel:"assignments",
+        grayOut:!this.enableAssignment,
+        callBack:(()=>{
+          this.activeSection="assignments";
+          this.thisAssignmentInfo="";
+          this.loadSection();
+          this.componentLoadedFromNavigationBar=null;
+          this.editCategoryButton=null
+          console.log("clicking assignment_link")
+          this.forceUpdate()
+        }
+          ),
+      }
+
       this.assignment_link = (
         <div className={assignment_class}>
       <Link to={'/assignments'}  data-cy="assignmentsNavItem"
@@ -3532,8 +3594,41 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.courseIdsArray.map((id)=>{
         this.coursesToChoose[id]={
           showText:this.courseInfo[id]['courseName'],
-          callBackFunction:(e)=>{
-          this.currentCourseId = e;
+          callBackFunction:(e)=>{ // changing
+
+          this.updateNumber+=1
+        this.alreadyHasCourseInfo=false
+        this.alreadyLoadAssignment=[]
+        this.alreadyMadeLink=[]
+        this.tree_route=[]
+        this.tree_route_right_column=[]
+
+
+        this.overview_branchId=""
+        this.syllabus_branchId=""
+
+        this.overview_link=null
+        this.syllabus_link=null
+        this.grade_link=null
+        this.assignment_link=null
+
+        this.currentCourseId = e;
+        this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+        this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+        this.rightToView = false
+        this.rightToEdit = false
+        this.instructorRights = false
+        if (this.accessAllowed==="1"){
+          this.rightToView = true
+          if (this.adminAccess==="1"){
+            this.rightToEdit = true
+            this.instructorRights = true
+          }
+        }
+        this.usingDefaultCourseId = false
+        this.alreadyLoadAllCourses = false
+
+        this.forceUpdate()
             // this.courseChosenCallBack({e:e})
           } 
         }
@@ -3644,14 +3739,17 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             key={"TLP01"+this.updateNumber++}
             panelName="context"
             menuControls={[
-              (this.coursesToChoose?<Menu
+              (this.coursesToChoose?
+              <Menu
               currentTool={"something"}
-              width={"500px"}
-              key={"menu00"+(this.updateNumber++)}           
-              showThisRole={this.courseInfor?(this.courseInfo[this.currentCourseId]['courseName']+"  "):""}
+              width={"200px"}
+              key={"menu00"+(this.updateNumber++)}  
+              //showThisRole={"N/A"}
+
+              showThisRole={this.currentCourseId && this.courseInfo?(this.courseInfo[this.currentCourseId]['courseName']+"  "):"NONE"}
               itemsToShow = {this.coursesToChoose}
-              offsetPos={-47}
-              menuWidth={"500px"}
+              offsetPos={-55}
+              menuWidth={"200px"}
               />
               :null)
             ]}
@@ -3659,18 +3757,27 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         <Router>
           <>
 
-              {this.overview_link}
+              {/* {this.overview_link}
               {this.syllabus_link}
               {this.grade_link}
 
-              {this.assignment_link}
+              {this.assignment_link}*/}
 
-              {this.activeSection==="assignments"?this.assignmentTree:null}
+              {/* {this.activeSection==="assignments"?this.assignmentTree:null}  */}
               
 
           </>
         </Router>
-        <SelectionSet 
+        <SelectionSet
+            key={"SelectSet1"+(this.updateNumber++)}
+            // CommonCallBack={(e)=>{console.log(e)}}
+            allElements={this.allElementsCopy}
+            type={"Link"}
+            forceSelected={this.activeSection}
+            gradeOut={[this.listGrayOut]}
+        />
+        {/* {this.activeSection==="assignments"?this.assignmentTree:null} */}
+        {/* <SelectionSet 
             key={"SelectSet1"+(this.updateNumber++)}
             CommonCallBack={(e)=>{console.log(e)}} //default callBack for every choices
             allElements={
@@ -3698,7 +3805,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 }
               }
             }
-            />
+            /> */}
 
           </ToolLayoutPanel> 
 
@@ -3706,7 +3813,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           key={"TLP02"+this.updateNumber++}
             panelName="Editor"
             menuControls={[
-              (this.activeSection==="grade"||this.activeSection==="assignments"?null:
+              (this.activeSection==="grades"||this.activeSection==="assignments"?null:
               this.editCategoryButton),
               this.switchCategoryButton
 
@@ -3729,7 +3836,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 <Route key="/" exact path="/">
                 {this.loadFirstTrue}
                 </Route>
-                <Route key ="assignments" exact path='/assignments'>
+                <Route key ="assignments" exact path='/Assignments'>
                 </Route>
                 {this.tree_route}
               </Switch>

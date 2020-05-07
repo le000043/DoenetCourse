@@ -16,7 +16,7 @@ const Icon = styled.div `
   flex-direction: row;
   font-size: 13px;
   text-align: center;
-  width: 160px;
+  width: 250px;
   border-radius: 4px;
   cursor: pointer;
   background-color: none;
@@ -40,18 +40,35 @@ background-color: #6de5ff;
   display:block;
   `
 const DropDownContent = styled(animated.div) `
+opacity:1;
 display: none;
   position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+  //background-color: #f9f9f9;
+  background-color: white;
+  min-width: 200px;
+  //box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  //z-index: 1;
 `
 
 
 
     const Menu = ({currentTool,showThisRole,itemsToShow,menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
       const node = useRef();
+      console.log("from menu")
+      const [MenuWidth,setMenuWidth] = useState(menuWidth);
+      useEffect(() => {
+        setMenuWidth (node.current ? node.current.offsetWidth : 0)
+        console.log('width', node.current ? node.current.offsetWidth : 0);
+      }, [node.current]);
+      // console.log(currentTool)
+      // console.log(showThisRole)
+      // console.log(itemsToShow)
+
+      // console.log(menuIcon)
+      // console.log(width)
+      // console.log(grayTheseOut)
+      // console.log(offsetPos)
+      // console.log(menuWidth)
       const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
       // let rolesDisplay=[]
       let updateNumber=0
@@ -94,7 +111,7 @@ display: none;
         opacity: show ? 1 : 0,
         display: "block",
         flexDirection:'column',
-        width:(menuWidth?menuWidth:"160px"),
+        width:(MenuWidth?MenuWidth:"300px"),
         config:{friction:15,mass:1,tensions:180}
       });
         useEffect(() => {
@@ -149,12 +166,13 @@ display: none;
          : // no icon
        (<button 
 
-        style={{margin:"0",
-        minWidth:(width?width:"160px"),
+        style={{
+        minWidth:(MenuWidth),
           backgroundColor: "#6de5ff",
             color: "black",
-            padding: "16px",
+             padding: "16px 16px 16px 16px",
             margin:"0",
+            
             fontSize: "16px",
             cursor: "pointer",
             display:"block"
@@ -172,7 +190,8 @@ display: none;
         style={Object.keys(itemsToShow).length>1?fullMenuAnimation:null} >
           {itemTransitions.map(({ item, key, props }) => (
               (<animated.div
-                style={props} key={key}
+                style={props} 
+                key={key}
                 onClick={()=>{
                 if (itemsToShow[item]['url']){
                   window.location.href = itemsToShow[item]['url']

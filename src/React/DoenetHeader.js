@@ -205,7 +205,7 @@ class DoenetHeader extends Component {
             </div>}
             <div className="headingToolbar">
 
-              <Menu showThisRole={this.props.rights?this.props.rights.defaultRole:""} roles={this.roles} permissionCallback={this.props.rights?this.props.rights.permissionCallBack:null}/>
+              {/* <Menu showThisRole={this.props.rights?this.props.rights.defaultRole:""} roles={this.roles} permissionCallback={this.props.rights?this.props.rights.permissionCallBack:null}/> */}
             {/* {this.selectPermission}           */}
 
               <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  

@@ -7,7 +7,7 @@ padding: 17px 10px 10px 10px ;
 position: relative;
 height: 60px;
 display: block;
-overflow: hidden;
+
 cursor: pointer;
 color: black;
 background: white;
@@ -17,7 +17,7 @@ padding: 17px 10px 10px 10px ;
 position: relative;
 height: 60px;
 display: block;
-overflow: hidden;
+
 text-align: center ;
 color: grey;
 background: white;
