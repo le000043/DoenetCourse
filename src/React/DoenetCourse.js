@@ -983,8 +983,8 @@ class DoenetCourse extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       let location = window.location.hash
-      // console.log("downloading loadAllCourses")
-      // console.log(resp.data)
+      console.log("downloading loadAllCourses")
+      console.log(resp.data)
       this.alreadyHasCourseInfo = true
       this.courseInfo = resp.data.courseInfo;
       this.courseIdsArray = resp.data.courseIds;
@@ -3342,7 +3342,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   render() {
     console.log("====RENDER====");
               // showThisRole={this.courseInfo?(this.courseInfo[this.currentCourseId]['courseName']+"  "):""}
-    console.log(this.enableAssignment)
+    console.log(this.courseIdsArray)
     // console.log(this.coursesPermissions)
     // console.log(this.coursesToChoose)
     // let phone_homeLeftNav_style={}
