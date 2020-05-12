@@ -983,11 +983,56 @@ class DoenetCourse extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       let location = window.location.hash
-      console.log("downloading loadAllCourses")
-      console.log(resp.data)
+      // console.log("downloading loadAllCourses")
+      // console.log(resp.data)
       this.alreadyHasCourseInfo = true
       this.courseInfo = resp.data.courseInfo;
       this.courseIdsArray = resp.data.courseIds;
+      
+      this.courseIdsArray.map((id)=>{
+        this.coursesToChoose[id]={
+          showText:this.courseInfo[id]['courseName'],
+          callBackFunction:(e)=>{ // changing
+
+          this.updateNumber+=1
+        this.alreadyHasCourseInfo=false
+        this.alreadyLoadAssignment=[]
+        this.alreadyMadeLink=[]
+        this.tree_route=[]
+        this.tree_route_right_column=[]
+
+
+        this.overview_branchId=""
+        this.syllabus_branchId=""
+
+        this.overview_link=null
+        this.syllabus_link=null
+        this.grade_link=null
+        this.assignment_link=null
+
+        this.currentCourseId = e;
+        this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+        this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+        this.rightToView = false
+        this.rightToEdit = false
+        this.instructorRights = false
+        if (this.accessAllowed==="1"){
+          this.rightToView = true
+          if (this.adminAccess==="1"){
+            this.rightToEdit = true
+            this.instructorRights = true
+          }
+        }
+        this.usingDefaultCourseId = false
+        this.alreadyLoadAllCourses = false
+
+        //this.forceUpdate()
+            // this.courseChosenCallBack({e:e})
+          } 
+        }
+      })
+
+
       if (this.usingDefaultCourseId){
         this.currentCourseId = resp.data.courseIds[0] // default when first load
       }
@@ -3342,7 +3387,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   render() {
     console.log("====RENDER====");
               // showThisRole={this.courseInfo?(this.courseInfo[this.currentCourseId]['courseName']+"  "):""}
-    console.log(this.courseIdsArray)
+    console.log(this.enableAssignment)
     // console.log(this.coursesPermissions)
     // console.log(this.coursesToChoose)
     // let phone_homeLeftNav_style={}

@@ -6,8 +6,8 @@ import './box.css'
 // import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import DateTimePicker from 'react-datetime-picker';
-class DoenetBox extends Component {
+// import DateTimePicker from 'react-datetime-picker';
+export default class DoenetBox extends Component {
   constructor(props) {
     super(props);
 
@@ -117,25 +117,7 @@ class DoenetBox extends Component {
         </div>
       )
     }
-    // else if (this.inputType==="calendar"){
-    //   return (
-    //     <div className = {this.className}> 
-    //       <span className="SectionText">{this.title}</span>
-    //       <span className="SectionValue">
 
-    //       {!this.writePriviledge?(<DateTimePicker
-    //       onChange={(date)=>{this.props.parentFunction(date.toString());this.setState({date:date})}}
-    //       // onChange={(date)=>{console.log("its type is ");console.log(new Date(date).toString())}}
-    //       value={this.state.date}
-    //       disableClock = {true}
-    //     />):(<div>{this.state.date}</div>)
-      
-    //   }
-        
-    //     </span>
-    //     </div>
-    //   )
-    // }
     else if (this.inputType==="Calendar"){
       return (
         <div> 
@@ -184,5 +166,3 @@ class DoenetBox extends Component {
     
   }
 }
-
-export default DoenetBox;
