@@ -11,9 +11,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import Menu from './menu.js'
-import Selection from "./Selector/Selection";
 import SelectionSet from "./Selector/SelectionSet";
-
+// TO-DO: add carrot to set, sketch out how to solve the Router and SelectionSet coordination
 // import {
 //   BrowserRouter as Router,
 //   Switch,
@@ -3779,13 +3778,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         {/* {this.activeSection==="assignments"?this.assignmentTree:null} */}
         {/* <SelectionSet 
             key={"SelectSet1"+(this.updateNumber++)}
-            CommonCallBack={(e)=>{console.log(e)}} //default callBack for every choices
+            CommonCallBack={(e)=>{console.log("common callback: "+e)}} //default callBack for every choices
             allElements={
               {
                 element01:{
                   type:"IndependentItem",
                   thisElementLabel:"choice01",
-                  callBack:(()=>{console.log("choice001")}),
+                  // callBack:(()=>{console.log("choice001")}),
                 },
                 element02:{
                   type:"IndependentSet",

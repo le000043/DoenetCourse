@@ -1,12 +1,15 @@
-import React, {useState,useEffect,useRef } from 'react';
+import React, {useState,
+  // useEffect,useRef 
+} from 'react';
 import styled from 'styled-components';
 import {
   HashRouter as Router, // TODO: try not to use HashRouter, user BrownserRouter instead
-  Switch,
-  Route,
+  // Switch,
+  // Route,
   Link,
 } from "react-router-dom";
 // import {animated,useSpring} from 'react-spring';
+// TO-DO: add documentation for this componenet
 const IndependentItemNotSelected = styled.div`
 
 font-size: 18px;
@@ -114,14 +117,14 @@ const SelectionSet = ({allElements,CommonCallBack,type="",forceSelected=""}) =>{
             if (selectedItem!=allElements[item]['thisElementLabel']){
               setSelectedItem(allElements[item]['thisElementLabel'])
             }
-            if (allElements[item]['OverloadingFunctionOnItems'] && allElements[item]['OverloadingFunctionOnItems'][labelOfEachChoice]){
-              allElements[item]['OverloadingFunctionOnItems'][labelOfEachChoice]()
+            if (allElements[item]['OverloadingFunctionOnItems'] && allElements[item]['OverloadingFunctionOnItems'][allElements[item]['thisElementLabel']]){
+              allElements[item]['OverloadingFunctionOnItems'][allElements[item]['thisElementLabel']]()
             } 
             else if (allElements[item]['callBack']){
               allElements[item]['callBack']()
             }
-            else if (CommonCallBack(labelOfEachChoice)) {
-              CommonCallBack(labelOfEachChoice);
+            else if (CommonCallBack(allElements[item]['thisElementLabel'])) {
+              CommonCallBack(allElements[item]['thisElementLabel']);
             }
             //allElements[item]['callBack'](e)
           }
@@ -170,14 +173,14 @@ const SelectionSet = ({allElements,CommonCallBack,type="",forceSelected=""}) =>{
               if (selectedItem!=allElements[item]['thisElementLabel']){
                 setSelectedItem(allElements[item]['thisElementLabel'])
               }
-              if (allElements[item]['OverloadingFunctionOnItems'] && allElements[item]['OverloadingFunctionOnItems'][labelOfEachChoice]){
-                allElements[item]['OverloadingFunctionOnItems'][labelOfEachChoice]()
+              if (allElements[item]['OverloadingFunctionOnItems'] && allElements[item]['OverloadingFunctionOnItems'][allElements[item]['thisElementLabel']]){
+                allElements[item]['OverloadingFunctionOnItems'][allElements[item]['thisElementLabel']]()
               } 
               else if (allElements[item]['callBack']){
                 allElements[item]['callBack']()
               }
-              else if (CommonCallBack(labelOfEachChoice)) {
-                CommonCallBack(labelOfEachChoice);
+              else if (CommonCallBack(allElements[item]['thisElementLabel'])) {
+                CommonCallBack(allElements[item]['thisElementLabel']);
               }
               //allElements[item]['callBack'](e)
             }
